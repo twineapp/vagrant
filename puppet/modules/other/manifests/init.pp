@@ -106,14 +106,6 @@ class other
     
     file 
     { 
-        "/vagrant/src/flaskapps/etl/ETL/etl.cfg":
-            ensure  => present,
-            source  => "/vagrant/puppet/templates/etl.cfg",
-            require => Package['apache2'],
-    }
-    
-    file 
-    { 
         "/vagrant/src/flaskapps/etl/ETL/etl.wsgi":
             ensure  => present,
             source  => "/vagrant/puppet/templates/etl.wsgi",

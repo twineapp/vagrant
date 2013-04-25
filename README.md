@@ -26,6 +26,7 @@ a. Clone 'siv-v3' github repository into 'twineapp/vagrant/src/' directory (~55M
 b. (optional) Clone 'etl' github repository into 'twineapp/vagrant/src/flaskapps/' directory and switch to the V2 branch (~0.3MB)
 c. Copy twine mysql build to 'twineapp/vagrant/src/mysql' directory, don't overwrite the .sh file (~83MB)
 d. (optional) Copy twine mongodb build to 'twineapp/vagrant/src/mongo' directory (~288MB)
+e. (optional) Copy etl.cfg from Dropbox into /flaskapps/etl/ETL/
 4. Run terminal, go into your project directory 'twine vagrant', and execute the command 'vagrant up'. This will download the base box of ubuntu (~35MB), and bring up the twine vm
 5. Replace the siv-local.php file at /siv-v3/api/application/config/ with the version sent by email / in the config dropbox folder
 
