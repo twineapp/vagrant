@@ -1,10 +1,24 @@
 class mongo 
 {
+    exec 
+    { 
+        'mongo-10gen-key':
+            command => 'apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10',
+    }
+    
+    exec 
+    { 
+        '10gen-repo':
+            command => 'echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" > /etc/apt/sources.list.d/10gen.list',
+            require => Exec['mongo-10gen-key'],
+            notify  => Exec['apt-get update']
+    }
+    
     package 
     { 
-        "mongodb":
+        "mongodb-10gen":
             ensure  => present,
-            require => Exec['apt-get update']
+            require => [ Exec['apt-get update'], Exec['10gen-repo'] ],
     }
 
     service 
@@ -12,7 +26,7 @@ class mongo
         "mongodb":
             enable => true,
             ensure => running,
-            require => Package["mongodb"],
+            require => Package["mongodb-10gen"],
     }
 
     exec { 'pecl-mongo-install':
@@ -34,7 +48,7 @@ class mongo
         "mongorestore-his":
             command => 'mongorestore -d his /vagrant/src/mongo/his.bson',
             timeout => 3600,
-            require => Package["mongodb"],
+            require => Package["mongodb-10gen"],
     }
     
     exec
@@ -42,6 +56,6 @@ class mongo
         "mongorestore-de-urban":
             command => 'mongorestore -d de_urban /vagrant/src/mongo/de_urban.bson',
             timeout => 3600,
-            require => Package["mongodb"],
+            require => Package["mongodb-10gen"],
     }
 }

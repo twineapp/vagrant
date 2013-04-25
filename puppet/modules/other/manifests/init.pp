@@ -20,6 +20,13 @@ class other
             command => 'echo "extension=oauth.so" >> /etc/php5/apache2/php.ini',
             require => Exec['pecl-oauth-install'],
     }
+    
+    exec 
+    { 
+        'etl-setup':
+            command => '/vagrant/src/scripts/etl-setup.sh',
+            require => Package['python-setuptools'],
+    }
 
     package 
     { 
@@ -91,7 +98,7 @@ class other
     
     file 
     { 
-        "/vagrant/src/flaskapps/etl/config_local.py":
+        "/vagrant/src/flaskapps/etl/ETL/config_local.py":
             ensure  => present,
             source  => "/vagrant/puppet/templates/config_local.py",
             require => Package['apache2'],
@@ -99,7 +106,7 @@ class other
     
     file 
     { 
-        "/vagrant/src/flaskapps/etl/etl.cfg":
+        "/vagrant/src/flaskapps/etl/ETL/etl.cfg":
             ensure  => present,
             source  => "/vagrant/puppet/templates/etl.cfg",
             require => Package['apache2'],

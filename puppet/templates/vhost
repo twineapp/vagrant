@@ -14,6 +14,15 @@
 		Order allow,deny
 		allow from all
 	</Directory>
+	
+	WSGIDaemonProcess etl processes=2 maximum-requests=500 threads=1
+        WSGIScriptAlias /etl /vagrant/src/flaskapps/etl/ETL/etl.wsgi
+	<Directory /vagrant/src/flaskapps/etl/ETL>
+		WSGIProcessGroup etl
+		WSGIApplicationGroup %{GLOBAL}
+		Order deny,allow
+		Allow from all
+	</Directory>
 
 	ErrorLog /var/log/apache2/error.log
 	LogLevel warn
