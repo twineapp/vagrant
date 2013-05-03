@@ -32,7 +32,7 @@ class apache
     { 
         "/etc/apache2/sites-available/default":
             ensure  => present,
-            source  => "/vagrant/puppet/templates/vhost",
+            source  => "/var/www/vagrant/puppet/templates/vhost",
             require => [ Package["apache2"], File["/etc/apache2/mods-enabled/wsgi.load"] ]
     }
 
