@@ -49,6 +49,7 @@ class mongo
             command => 'mongorestore -d his /var/www/vagrant/src/mongo/his.bson',
             timeout => 3600,
             require => Package["mongodb-10gen"],
+            onlyif  => 'test -f /var/www/vagrant/src/mongo/his.bson',
     }
     
     exec
@@ -57,5 +58,6 @@ class mongo
             command => 'mongorestore -d de_urban /var/www/vagrant/src/mongo/de_urban.bson',
             timeout => 3600,
             require => Package["mongodb-10gen"],
+            onlyif  => 'test -f /var/www/vagrant/src/mongo/de_urban.bson',
     }
 }

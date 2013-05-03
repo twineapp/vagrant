@@ -26,6 +26,7 @@ class other
         'etl-setup':
             command => '/var/www/vagrant/src/scripts/etl-setup.sh',
             require => Package['python-setuptools'],
+            onlyif  => 'test -f /var/www/flaskapps/etl/setup.py',
     }
 
     package 
@@ -96,20 +97,22 @@ class other
             require => Package['apache2'],
     }
     
-    file 
-    { 
-        "/var/www/flaskapps/etl/ETL/config_local.py":
-            ensure  => present,
-            source  => "/var/www/vagrant/puppet/templates/config_local.py",
-            require => Package['apache2'],
+    exec
+    {
+        "config_local.py":
+            command => 'cp /var/www/vagrant/puppet/templates/config_local.py /var/www/flaskapps/etl/ETL/config_local.py',
+            timeout => 3600,
+            require => Exec["etl-setup"],
+            onlyif  => 'test -f /var/www/flaskapps/etl/setup.py',
     }
     
-    file 
-    { 
-        "/var/www/flaskapps/etl/ETL/etl.wsgi":
-            ensure  => present,
-            source  => "/var/www/vagrant/puppet/templates/etl.wsgi",
-            require => Package['apache2'],
+    exec
+    {
+        "etl.wsgi":
+            command => 'cp /var/www/vagrant/puppet/templates/etl.wsgi /var/www/flaskapps/etl/ETL/etl.wsgi',
+            timeout => 3600,
+            require => Exec["etl-setup"],
+            onlyif  => 'test -f /var/www/flaskapps/etl/setup.py',
     }
     
     file 
@@ -126,5 +129,14 @@ class other
             ensure  => present,
             source  => "/var/www/vagrant/puppet/templates/phpinfo.php",
             require => Package['apache2'],
+    }
+    
+    file 
+    {
+	"/var/www/siv-v3/filestore":
+	    ensure => "directory",
+	    owner  => "root",
+	    group  => "root",
+	    mode   => 777,
     }
 }
