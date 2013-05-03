@@ -31,16 +31,17 @@ Guide:
 5. Replace the siv-local.php file at /siv-v3/api/application/config/ with the version sent by email / in the config dropbox folder
 
 Installing Puppets Locally:
-1. Go through steps 2. and 3. from above "Guide"
-2. sudo apt-get install puppet-common
-3. sudo puppet apply puppet/manifests/twine.pp --modulepath=puppet/modules/
-4. Go through step 5. from above "Guide"
+1. Clone this repository (twineapp/vagrant) in '/var/www/'
+2. Go through step 3. from above "Guide"
+3. sudo apt-get install puppet-common
+4. Change directory to '/var/www/vagrant/' and run: sudo puppet apply puppet/manifests/twine.pp --modulepath=puppet/modules/
+5. Go through step 5. from above "Guide"
 
 Notes:
 - Server should be ready to use (webserver: 8081, mysql: 3316)
 - Test via http://localhost:8081/phpinfo.php OR http://localhost:8081/siv-v3/login.php
 - src in the directory is linked to the webserver document root
-- Command to copy files to Amazon EC2: scp -i ~/Desktop/ubuntu.pem sql/* ubuntu@54.243.48.252:/home/ubuntu/vagrant/src/sql
+- Command to copy files to Amazon EC2: scp -i ~/Desktop/ubuntu.pem sql/* ubuntu@54.243.48.252:/var/www/vagrant/src/sql
 
 VM Passwords
 - mysql username:password are root:password
