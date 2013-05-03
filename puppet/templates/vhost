@@ -1,14 +1,14 @@
 <VirtualHost *:80>
 	ServerAdmin admin@twine
 
-	DocumentRoot /vagrant/src/
+	DocumentRoot /var/www/
 	
 	<Directory />
 		Options FollowSymLinks
 		AllowOverride None
 	</Directory>
 	
-	<Directory /vagrant/src/>
+	<Directory /var/www/>
 		Options Indexes FollowSymLinks MultiViews
 		AllowOverride All
 		Order allow,deny
@@ -16,8 +16,8 @@
 	</Directory>
 	
 	WSGIDaemonProcess etl processes=2 maximum-requests=500 threads=1
-        WSGIScriptAlias /etl /vagrant/src/flaskapps/etl/ETL/etl.wsgi
-	<Directory /vagrant/src/flaskapps/etl/ETL>
+        WSGIScriptAlias /etl /var/www/flaskapps/etl/ETL/etl.wsgi
+	<Directory /var/www/flaskapps/etl/ETL>
 		WSGIProcessGroup etl
 		WSGIApplicationGroup %{GLOBAL}
 		Order deny,allow

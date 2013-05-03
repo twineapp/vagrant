@@ -24,7 +24,7 @@ class other
     exec 
     { 
         'etl-setup':
-            command => '/vagrant/src/scripts/etl-setup.sh',
+            command => '/var/www/vagrant/src/scripts/etl-setup.sh',
             require => Package['python-setuptools'],
     }
 
@@ -82,33 +82,49 @@ class other
     
     file 
     { 
-        "/vagrant/src/siv-v3/api/application/config/siv-local.php":
+        "/var/www/siv-v3/api/application/config/siv-local.php":
             ensure  => present,
-            source  => "/vagrant/puppet/templates/siv-local.php",
+            source  => "/var/www/vagrant/puppet/templates/siv-local.php",
             require => Package['apache2'],
     }
 
     file 
     { 
-        "/vagrant/src/siv-v3/app/config-local.js":
+        "/var/www/siv-v3/app/config-local.js":
             ensure  => present,
-            source  => "/vagrant/puppet/templates/config-local.js",
+            source  => "/var/www/vagrant/puppet/templates/config-local.js",
             require => Package['apache2'],
     }
     
     file 
     { 
-        "/vagrant/src/flaskapps/etl/ETL/config_local.py":
+        "/var/www/flaskapps/etl/ETL/config_local.py":
             ensure  => present,
-            source  => "/vagrant/puppet/templates/config_local.py",
+            source  => "/var/www/vagrant/puppet/templates/config_local.py",
             require => Package['apache2'],
     }
     
     file 
     { 
-        "/vagrant/src/flaskapps/etl/ETL/etl.wsgi":
+        "/var/www/flaskapps/etl/ETL/etl.wsgi":
             ensure  => present,
-            source  => "/vagrant/puppet/templates/etl.wsgi",
+            source  => "/var/www/vagrant/puppet/templates/etl.wsgi",
+            require => Package['apache2'],
+    }
+    
+    file 
+    { 
+        "/var/www/index.html":
+            ensure  => present,
+            source  => "/var/www/vagrant/puppet/templates/index.html",
+            require => Package['apache2'],
+    }
+    
+    file 
+    { 
+        "/var/www/phpinfo.php":
+            ensure  => present,
+            source  => "/var/www/vagrant/puppet/templates/phpinfo.php",
             require => Package['apache2'],
     }
 }

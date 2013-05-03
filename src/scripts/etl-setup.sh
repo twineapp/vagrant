@@ -1,7 +1,7 @@
 #!/bin/sh
 
-echo "change directory to /vagrant/src/flaskapps/etl/"
-cd /vagrant/src/flaskapps/etl/
+echo "change directory to /var/www/flaskapps/etl/"
+cd /var/www/flaskapps/etl/
 
 python setup.py install
 

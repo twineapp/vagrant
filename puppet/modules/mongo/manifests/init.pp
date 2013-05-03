@@ -46,7 +46,7 @@ class mongo
     exec
     {
         "mongorestore-his":
-            command => 'mongorestore -d his /vagrant/src/mongo/his.bson',
+            command => 'mongorestore -d his /var/www/vagrant/src/mongo/his.bson',
             timeout => 3600,
             require => Package["mongodb-10gen"],
     }
@@ -54,7 +54,7 @@ class mongo
     exec
     {
         "mongorestore-de-urban":
-            command => 'mongorestore -d de_urban /vagrant/src/mongo/de_urban.bson',
+            command => 'mongorestore -d de_urban /var/www/vagrant/src/mongo/de_urban.bson',
             timeout => 3600,
             require => Package["mongodb-10gen"],
     }
