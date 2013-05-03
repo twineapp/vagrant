@@ -39,9 +39,9 @@ class other
     exec
     {
         "wget-prince":
-            command => 'wget http://www.princexml.com/download/prince_8.1-5_ubuntu12.04_i386.deb -O /tmp/prince_8.1-5_ubuntu12.04_i386.deb',
+            command => 'wget http://www.princexml.com/download/prince_8.1-5_ubuntu12.04_amd64.deb -O /tmp/prince_8.1-5_ubuntu12.04_amd64.deb',
             timeout => 3600,
-            creates =>  "/tmp/prince_8.1-5_ubuntu12.04_i386.deb",
+            creates =>  "/tmp/prince_8.1-5_ubuntu12.04_amd64.deb",
     }
 
     package 
@@ -63,7 +63,7 @@ class other
         "prince":
             provider => dpkg,
             ensure   => present,
-            source   => "/tmp/prince_8.1-5_ubuntu12.04_i386.deb",
+            source   => "/tmp/prince_8.1-5_ubuntu12.04_amd64.deb",
             require => [ Package["libtiff4"], Package["libgif4"], Exec['wget-prince'] ]
     }
 
