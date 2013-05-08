@@ -98,7 +98,7 @@ $config['smssync_secret_key']			= '';
 */
 $config['files']['filestore']['location']						= 'local'; //'location' can be 'local', 'dropbox'. This determines where to look for files to retrieve.
 //if filestore is local
-$config['files']['location']['local']['path_from_root']		= '/vagrant/src/siv-v3/filestore';
+$config['files']['location']['local']['path_from_root']		= '/var/www/siv-v3/filestore';
 $config['files']['filestore']['backup_file_path']				= NULL;
 
 /*

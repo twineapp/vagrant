@@ -20,6 +20,14 @@ class other
             command => 'echo "extension=oauth.so" >> /etc/php5/apache2/php.ini',
             require => Exec['pecl-oauth-install'],
     }
+    
+    exec 
+    { 
+        'etl-setup':
+            command => '/var/www/vagrant/src/scripts/etl-setup.sh',
+            require => Package['python-setuptools'],
+            onlyif  => 'test -f /var/www/flaskapps/etl/setup.py',
+    }
 
     package 
     { 
@@ -31,9 +39,9 @@ class other
     exec
     {
         "wget-prince":
-            command => 'wget http://www.princexml.com/download/prince_8.1-5_ubuntu12.04_i386.deb -O /tmp/prince_8.1-5_ubuntu12.04_i386.deb',
+            command => 'wget http://www.princexml.com/download/prince_8.1-5_ubuntu12.04_amd64.deb -O /tmp/prince_8.1-5_ubuntu12.04_amd64.deb',
             timeout => 3600,
-            creates =>  "/tmp/prince_8.1-5_ubuntu12.04_i386.deb",
+            creates =>  "/tmp/prince_8.1-5_ubuntu12.04_amd64.deb",
     }
 
     package 
@@ -55,7 +63,7 @@ class other
         "prince":
             provider => dpkg,
             ensure   => present,
-            source   => "/tmp/prince_8.1-5_ubuntu12.04_i386.deb",
+            source   => "/tmp/prince_8.1-5_ubuntu12.04_amd64.deb",
             require => [ Package["libtiff4"], Package["libgif4"], Exec['wget-prince'] ]
     }
 
@@ -75,41 +83,60 @@ class other
     
     file 
     { 
-        "/vagrant/src/siv-v3/api/application/config/siv-local.php":
+        "/var/www/siv-v3/api/application/config/siv-local.php":
             ensure  => present,
-            source  => "/vagrant/puppet/templates/siv-local.php",
+            source  => "/var/www/vagrant/puppet/templates/siv-local.php",
             require => Package['apache2'],
     }
 
     file 
     { 
-        "/vagrant/src/siv-v3/app/config-local.js":
+        "/var/www/siv-v3/app/config-local.js":
             ensure  => present,
-            source  => "/vagrant/puppet/templates/config-local.js",
+            source  => "/var/www/vagrant/puppet/templates/config-local.js",
+            require => Package['apache2'],
+    }
+    
+    exec
+    {
+        "config_local.py":
+            command => 'cp /var/www/vagrant/puppet/templates/config_local.py /var/www/flaskapps/etl/ETL/config_local.py',
+            timeout => 3600,
+            require => Exec["etl-setup"],
+            onlyif  => 'test -f /var/www/flaskapps/etl/setup.py',
+    }
+    
+    exec
+    {
+        "etl.wsgi":
+            command => 'cp /var/www/vagrant/puppet/templates/etl.wsgi /var/www/flaskapps/etl/ETL/etl.wsgi',
+            timeout => 3600,
+            require => Exec["etl-setup"],
+            onlyif  => 'test -f /var/www/flaskapps/etl/setup.py',
+    }
+    
+    file 
+    { 
+        "/var/www/index.html":
+            ensure  => present,
+            source  => "/var/www/vagrant/puppet/templates/index.html",
             require => Package['apache2'],
     }
     
     file 
     { 
-        "/vagrant/src/flaskapps/etl/config_local.py":
+        "/var/www/phpinfo.php":
             ensure  => present,
-            source  => "/vagrant/puppet/templates/config_local.py",
+            source  => "/var/www/vagrant/puppet/templates/phpinfo.php",
             require => Package['apache2'],
     }
     
     file 
-    { 
-        "/vagrant/src/flaskapps/etl/etl.cfg":
-            ensure  => present,
-            source  => "/vagrant/puppet/templates/etl.cfg",
-            require => Package['apache2'],
-    }
-    
-    file 
-    { 
-        "/vagrant/src/flaskapps/etl/ETL/etl.wsgi":
-            ensure  => present,
-            source  => "/vagrant/puppet/templates/etl.wsgi",
-            require => Package['apache2'],
+    {
+	"/var/www/siv-v3/filestore":
+	    ensure => "directory",
+	    owner  => "root",
+	    group  => "root",
+	    mode   => 777,
     }
 }

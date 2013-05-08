@@ -1,7 +1,7 @@
 #!/bin/sh
 
-echo "change directory to /vagrant/src/sql/"
-cd /vagrant/src/sql/
+echo "change directory to /var/www/vagrant/src/sql/"
+cd /var/www/vagrant/src/sql/
 
 echo "siv db script start."
 
