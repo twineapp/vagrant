@@ -42,11 +42,11 @@ class mongo
             command => 'echo "extension=mongo.so" >> /etc/php5/apache2/php.ini',
             require => Exec['pecl-mongo-install'],
     }
-    
+
     exec
     {
         "mongorestore-his":
-            command => 'mongorestore -d his /var/www/vagrant/src/mongo/his.bson',
+            command => 'mongorestore --drop -d siv /var/www/vagrant/src/mongo/his.bson',
             timeout => 3600,
             require => Package["mongodb-10gen"],
             onlyif  => 'test -f /var/www/vagrant/src/mongo/his.bson',
@@ -55,9 +55,42 @@ class mongo
     exec
     {
         "mongorestore-de-urban":
-            command => 'mongorestore -d de_urban /var/www/vagrant/src/mongo/de_urban.bson',
+            command => 'mongorestore --drop -d siv /var/www/vagrant/src/mongo/de_urban.bson',
             timeout => 3600,
             require => Package["mongodb-10gen"],
             onlyif  => 'test -f /var/www/vagrant/src/mongo/de_urban.bson',
+    }
+    
+    /*
+    exec
+    {
+        "mongorestore-de-foodaid":
+            command => 'mongorestore --drop -d siv /var/www/vagrant/src/mongo/de_foodaid.bson',
+            timeout => 3600,
+            require => Package["mongodb-10gen"],
+            onlyif  => 'test -f /var/www/vagrant/src/mongo/de_foodaid.bson',
+    }
+    */
+    exec
+    {
+        "wget-rockmongo":
+            command => 'wget http://rockmongo.com/release/rockmongo-1.1.5.zip -O /tmp/rockmongo-1.1.5.zip',
+            timeout => 3600,
+            creates =>  "/tmp/rockmongo-1.1.5.zip",
+    }
+    
+    package 
+    { 
+        "unzip":
+            ensure  => present,
+            require => Exec['apt-get update']
+    }
+    
+    exec
+    {
+        "unzip-rockmongo":
+            command => 'unzip -o /tmp/rockmongo-1.1.5.zip -d /var/www/',
+            timeout => 3600,
+            require => [ Exec['wget-rockmongo'], Package["unzip"] ]
     }
 }

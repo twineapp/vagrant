@@ -9,8 +9,6 @@ Vagrant.configure("2") do |config|
             vb.customize ["modifyvm", :id, "--memory", 2048, "--cpus", 2]
         end
         inv_config.ssh.max_tries = 360
-        #inv_config.vm.forward_port 80, 8081
-        #inv_config.vm.forward_port 3306, 3316
         inv_config.vm.network :forwarded_port, guest: 80, host: 8081
         inv_config.vm.network :forwarded_port, guest: 3306, host: 3316
         inv_config.vm.hostname = "twine"
@@ -25,6 +23,6 @@ Vagrant.configure("2") do |config|
             #puppet.options = "--verbose"
         end
 
-        inv_config.vm.provision :shell, :path => "src/sql/mysql.build.sh"
+        inv_config.vm.provision :shell, :path => "src/scripts/mysql.build.sh"
     end
 end
