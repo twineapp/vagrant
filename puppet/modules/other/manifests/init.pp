@@ -20,7 +20,7 @@ class other
             command => 'echo "extension=oauth.so" >> /etc/php5/apache2/php.ini',
             require => Exec['pecl-oauth-install'],
     }
-    
+
     exec 
     { 
         'etl-setup':
