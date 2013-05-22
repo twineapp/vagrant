@@ -24,7 +24,7 @@ Guide:
 3. Clone / copy in the twine repos and datasets  
   a. Clone 'siv-v3' github repository into 'twineapp/siv-v3/' directory (~55MB)  
   b. (optional) Clone 'etl' github repository into 'twineapp/flaskapps/etl/' directory and switch to the V2 branch (~0.3MB)  
-  c. Copy twine mysql build to 'twineapp/vagrant/src/mysql/' directory, don't overwrite the .sh file (~83MB)  
+  c. Copy twine mysql build to 'twineapp/vagrant/src/mysql/' directory (~83MB)  
   d. (optional) Copy twine mongodb build to 'twineapp/vagrant/src/mongo/' directory (~288MB)  
   e. (optional) Copy etl.cfg from Dropbox into "twineapp/flaskapps/etl/ETL/"
 4. Run terminal, go into 'twineapp/vagrant/', and execute the command 'vagrant up'. This will download the base box of ubuntu (~35MB), and bring up the twine vm  
@@ -36,8 +36,8 @@ Working with the twine vagrant:
 
 
 Notes:
-- Server should be ready to use (webserver: 8081, mysql: 3316)
-- Test via http://localhost:8081/phpinfo.php OR http://localhost:8081/siv-v3/login.php
+- Server should be ready to use at 192.168.50.4 (modify this static IP in Vagrantfile before bringing up the vagrant if required)
+- Test via http://192.168.50.4/phpinfo.php OR http://192.168.50.4/siv-v3/login.php
 - src in the directory is linked to the webserver document root
 - Command to copy files to Amazon EC2: scp -i ~/Desktop/ubuntu.pem sql/* ubuntu@54.243.48.252:/var/www/vagrant/src/sql
 
