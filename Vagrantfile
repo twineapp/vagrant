@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
 
         inv_config.vm.hostname = "twine"
         
-        inv_config.vm.synced_folder "../", "/var/www"
+        inv_config.vm.synced_folder "../", "/var/www", :extra => "dmode=777,fmode=777"
 
         inv_config.vm.provision :puppet do |puppet|
             puppet.manifests_path = "puppet/manifests"
