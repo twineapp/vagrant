@@ -41,6 +41,11 @@ Notes:
 - src in the directory is linked to the webserver document root
 - Command to copy files to Amazon EC2: scp -i ~/Desktop/ubuntu.pem sql/* ubuntu@54.243.48.252:/var/www/vagrant/src/sql
 
+Docs:
+- To setup phpdoc and dependencies run: sudo /var/www/vagrant/src/scripts/phpdoc-setup.sh
+- To generate autodocs for the Twine API run: /var/www/vagrant/src/scripts/phpdoc-build.sh
+- Docs available at: http://192.168.50.4/siv-v3/docs/
+
 VM Passwords
 - mysql username:password are root:password
 - rockmongo username:password are admin:admin
