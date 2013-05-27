@@ -6,32 +6,38 @@ configuration = {
 	# Debugging
 	"debug": True,
 	"api_debug": True,
+	"log_finished_report": True,
+
+	"threading": False,
 	
 	# API Authentication
 	# Header - Authorization: twine_token: "THE_API_KEY"
 	"api_token": "THIS_IS_MY_API_KEY",
 	"enforce_token": False,
 
-	# Databases
+	### Servers ###
 	"servers": {
-		"public": {
-			"username": "root",
-			"password": "password"
-		},
-		"admin": {
-			"username": "root",
-			"password": "password"
-		},
-		"his_data": {
-			"username": "admin",
-			"password": "admin"
-		}
+            "mongo": {
+                # List the driver
+                "driver": 	"mongo",
+                # the host
+                "host": 	"localhost",
+                # The port used to connect
+                "port": 	None,
+                # The username
+                "username":     "admin",
+                # The password
+                "password":     "admin",
+                # What databases are available on this server
+                "databases":    ["siv"]
+            },
+            "production": {
+                "driver":       "mysql",
+                "host":         "localhost",
+                "port":         27017,
+                "username":     "root",
+                "password":     "password",
+                "databases":    ["data", "app", "users"]
+            }
 	},
-	"databases": {
-		"his_data":	"siv"
-	},
-	"collections": {
-		"his": 		"his",
-		"de_urban":	"de_urban"
-	}
 }

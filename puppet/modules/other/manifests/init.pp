@@ -105,16 +105,7 @@ class other
             require => Exec["etl-setup"],
             onlyif  => 'test -f /var/www/flaskapps/etl/setup.py',
     }
-    
-    exec
-    {
-        "etl.wsgi":
-            command => 'cp /var/www/vagrant/puppet/templates/etl.wsgi /var/www/flaskapps/etl/ETL/etl.wsgi',
-            timeout => 3600,
-            require => Exec["etl-setup"],
-            onlyif  => 'test -f /var/www/flaskapps/etl/setup.py',
-    }
-    
+   
     file 
     { 
         "/var/www/index.html":
