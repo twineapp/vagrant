@@ -6,7 +6,7 @@ configuration = {
 	# Debugging
 	"debug": True,
 	"api_debug": True,
-	"log_finished_report": True,
+	"log_finished_report": False,
 
 	"threading": False,
 	
