@@ -9,6 +9,7 @@
 	</Directory>
 	
 	<Directory /var/www/>
+		EnableSendfile Off
 		Options Indexes FollowSymLinks MultiViews
 		AllowOverride All
 		Order allow,deny
