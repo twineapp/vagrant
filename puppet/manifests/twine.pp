@@ -18,6 +18,7 @@ include mysql
 include phpmyadmin
 include mongo
 include python
+include etl
 include wsgi
 
 exec 
