@@ -1,6 +1,6 @@
 class mysql 
 {
-    $mysqlPassword = "password"
+    $mysqlPassword = "pwd"
  
     package 
     { 

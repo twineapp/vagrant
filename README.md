@@ -47,7 +47,7 @@ With Packages:
 - Docs available at: http://192.168.50.4/siv-v3/docs/
 
 ## VM Passwords
-- mysql username:password are root:password
+- mysql username:password are root:pwd
 - rockmongo username:password are admin:admin
 
 ## Vagrant command reference
