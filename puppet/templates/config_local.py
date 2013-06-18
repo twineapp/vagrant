@@ -36,7 +36,7 @@ configuration = {
                 "host":         "localhost",
                 "port":         27017,
                 "username":     "root",
-                "password":     "password",
+                "password":     "pwd",
                 "databases":    ["data", "app", "users"]
             }
 	},
