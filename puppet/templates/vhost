@@ -16,7 +16,7 @@
 		allow from all
 	</Directory>
 	
-	WSGIDaemonProcess etl processes=2 maximum-requests=500 threads=1
+	WSGIDaemonProcess etl processes=1 maximum-requests=500 threads=2
         WSGIScriptAlias /etl /var/www/flaskapps/etl/ETL/etl.wsgi
 	<Directory /var/www/flaskapps/etl/ETL>
 		WSGIProcessGroup etl

@@ -26,4 +26,9 @@ class python
 	require	    => [Exec['apt-get update'], Package['python-numpy']]
     }
 
+    package { 'apscheduler':
+        ensure      => present,
+        require     => [Exec['apt-get update'], Package['python-numpy']] 
+    }
+
 }
