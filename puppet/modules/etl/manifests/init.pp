@@ -20,4 +20,9 @@ class etl
 	command	    => "pip install msgpack_python",
 	require	    => [Package['python-scipy'], Package['python-numpy'], Package['python-pip'], Exec['install-statsmodels']] 
      }
+
+     exec { "install-apscheduler":
+        command     => "pip install apscheduler",
+        require     => [Package['python-pip']] 
+    }
 }
