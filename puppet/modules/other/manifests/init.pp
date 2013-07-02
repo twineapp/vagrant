@@ -130,4 +130,14 @@ class other
 	    group  => "root",
 	    mode   => 777,
     }
+
+    file
+    {
+	"/home/TwineHeadlessBrowser":
+	    ensure => present,
+	    source => "/var/www/vagrant/puppet/templates/TwineHeadlessBrowser",
+	    group   => "root",
+	    owner   => "root",
+	    mode    => 777	
+    }
 }
