@@ -23,16 +23,19 @@ With Packages:
 2. Create a folder named 'twineapp/' and clone this repository (twineapp/vagrant).  
 3. Clone / copy in the twine repos and datasets  
     3.1. Clone 'siv-v3' github repository into 'twineapp/siv-v3/' directory (~55MB)  
-    3.2. **(optional)** Clone 'etl' github repository into 'twineapp/flaskapps/etl/' directory and switch to the V2 branch (~0.3MB)  
-    3.3. Copy twine mysql build to 'twineapp/vagrant/src/mysql/' directory (~83MB)  
-    3.4. **(optional)** Copy twine mongodb build to 'twineapp/vagrant/src/mongo/' directory (~288MB)  
-    3.5. **(optional)** Copy config\_local.py from Dropbox/Webhis Config into "twineapp/flaskapps/etl/ETL/"
+    3.2. **(optional)** Clone 'etl' github repository into 'twineapp/flaskapps/etl/' directory (~0.3MB)  
+    3.3. **(optional)** Clone 'documentation' github repository into 'twineapp/documentation/' directory  
+    3.4. Copy twine mysql build to 'twineapp/vagrant/src/mysql/' directory (~83MB)  
+    3.5. **(optional)** Copy twine mongodb build to 'twineapp/vagrant/src/mongo/' directory (~288MB)
 4. Run terminal, go into 'twineapp/vagrant/', and execute the command 'vagrant up'. This will download the base box of ubuntu (~35MB), and bring up the twine vm  
 
 ## Working with the twine vagrant:
+- "vagrant up" starts the virtual machine
 - "vagrant suspend" suspends the vm, this is normally how you would end your work session
 - "vagrant halt" shuts down the vm, you would do this to autoload additional db patches for example
-- "vagrant destroy" completely removes the vm from your machine. You would do this to save disk space if you won't be working on twine for a while, or to do a full rebuild after significant changes to the vagrant config
+- "vagrant reload" is equivelent to a halt and up, and should be run after changes to the vagrant repo
+- "vagrant destroy" completely removes the vm from your machine. You would do this to save disk space if you won't be working on twine for a while, or to do a full rebuild after significant changes to the vagrant repo
+- command reference: http://docs.vagrantup.com/v2/cli/index.html
 
 
 ## Notes:
@@ -41,17 +44,26 @@ With Packages:
 - src in the directory is linked to the webserver document root
 - Command to copy files to Amazon EC2: scp -i ~/Desktop/ubuntu.pem sql/\* ubuntu@54.243.48.252:/var/www/vagrant/src/sql
 
-## Docs:
+## PHP Docs:
 - To setup phpdoc and dependencies run: sudo /var/www/vagrant/src/scripts/phpdoc-setup.sh
 - To generate autodocs for the Twine API run: /var/www/vagrant/src/scripts/phpdoc-build.sh
 - Docs available at: http://192.168.50.4/siv-v3/docs/
+- these are copied into the documentation repo at documentation/api/app/
 
 ## VM Passwords
 - mysql username:password are root:pwd
 - rockmongo username:password are admin:admin
 
-## Vagrant command reference
- - http://docs.vagrantup.com/v2/cli/index.html
+## Known issues
+- **Hardware virtualization.** Issues have been reported in Windows 7 when hardward virtualization was not enabled in the system bios. http://www.virtualbox.org/manual/ch10.html
+- **Python install in Windows hosts.** The etl-setup.sh script is not executing in windows hosts. To run in manually:
+    - bring up the vagrant
+    - ssh in
+    - $ cd /var/www/flaskapps/etl/
+    - $ sudo python setup.py install
+    - in your host, copy twineapp/vagrant/puppet/templates/config_local.py to twineapp/flaskapps/etl/ETL/config_local.py
+    - $ sudo apachectl restart
+    - You should now get a response at 192.168.50.4/etl/status
 
 ## Installing Puppets Locally:  
 1. Clone this repository (twineapp/vagrant) in '/var/www/'  
