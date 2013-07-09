@@ -83,9 +83,9 @@ class other
     
     file 
     { 
-        "/var/www/siv-v3/api/application/config/siv-local.php":
+        "/var/www/siv-v3/siv.ini":
             ensure  => present,
-            source  => "/var/www/vagrant/puppet/templates/siv-local.php",
+            source  => "/var/www/vagrant/puppet/templates/siv.ini",
             require => Package['apache2'],
     }
 
