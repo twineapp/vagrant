@@ -91,9 +91,9 @@ class other
 
     file 
     { 
-        "/var/www/siv-v3/app/config-local.js":
+        "/var/www/siv-v3/app/config-local.json":
             ensure  => present,
-            source  => "/var/www/vagrant/puppet/templates/config-local.js",
+            source  => "/var/www/vagrant/puppet/templates/config-local.json",
             require => Package['apache2'],
     }
     
