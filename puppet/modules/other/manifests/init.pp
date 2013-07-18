@@ -96,6 +96,13 @@ class other
             source  => "/var/www/vagrant/puppet/templates/config-local.json",
             require => Package['apache2'],
     }
+
+    file { "/var/www/logs":
+	ensure => directory,
+	owner => "www-data",
+	group => "www-data",
+	mode => 777
+    }
     
     exec
     {
