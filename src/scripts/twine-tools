@@ -19,10 +19,11 @@ setup_tests() {
     fi
     
     echo "Installing PHP Test Harness..."
-    if [ ! -f "/usr/bin/phpunit" ]; then
-        sudo chmod -R 777 /tmp/pear/temp
-        sudo pear channel-discover pear.phpunit.de
-        sudo pear install phpunit/PHPUnit
+    if [ ! -f "/usr/local/bin/phpunit" ]; then
+        cd /tmp
+        wget http://pear.phpunit.de/get/phpunit.phar
+        sudo chmod +x phpunit.phar
+        sudo mv phpunit.phar /usr/local/bin/phpunit
     fi
 
     echo "Installing JavaScript Test Harness..."
