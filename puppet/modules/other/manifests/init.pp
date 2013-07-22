@@ -29,6 +29,10 @@ class other
             onlyif  => 'test -f /var/www/flaskapps/etl/setup.py',
     }
 
+    exec { "setup-twine-tools":
+        command => 'sudo ln -sf /var/www/vagrant/src/scripts/twine-tools /usr/bin/twine-tools'
+    }
+
     package 
     { 
         "libpcre3-dev":
