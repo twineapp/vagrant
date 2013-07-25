@@ -4,9 +4,11 @@ set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 now=`date +"%m_%d_%Y"`
+VER="0.0.2"
 
 BIN=/usr/bin
 
+# Sets up all of the dependencies for tests across all the applications
 setup_tests() {
     echo "--------------------------------------------"
     echo "Installing Python Test Harness..."
@@ -56,12 +58,14 @@ setup_tests() {
     echo "--------------------------------------------"
 }
 
+# Runs all available test types
 run_all_tests() {
     client_tests
     python_tests
     php_tests
 }
 
+# Cleans up test installation
 function test_clean() {
     echo "Cleaning up Test Environment"
     if [ -f "/tmp/phantomjs-1.9.1-linux-x86_64.tar.bz2" ]; then
@@ -79,6 +83,7 @@ function test_clean() {
     echo "Test Environment Clean"
 }
 
+# Runs python tests and outputs to XUnit format
 function python_tests() {
 
     echo "------------------------------------------------------------"
@@ -93,16 +98,18 @@ function python_tests() {
     echo
 }
 
+# Runs client tests and outputs XUnit format
 function client_tests() {
-    echo
-    echo "------------------------------------------------------------"
-    echo "                      Twine Client Tests"
-    echo "------------------------------------------------------------"
-    echo
-    casperjs test /var/www/siv-v3/app/tests/ --xunit=js_log_$now.xml
-    echo
+	echo
+	echo "------------------------------------------------------------"
+	echo "                      Twine Client Tests"
+	echo "------------------------------------------------------------"
+	echo
+	casperjs test /var/www/siv-v3/app/tests/ --xunit=js_log_$now.xml
+	echo
 }
 
+# Runs PHP Tests and outputs to JSON format
 function php_tests() {
     echo "------------------------------------------------------------"
     echo "                      PHP Tests"
@@ -112,6 +119,7 @@ function php_tests() {
     echo
 }
 
+# Drops and loads up the Mongo collections for siv
 function load_mongo() {
     echo "------------------------------------------------------------"
     echo "Searching for Mongo dumps (*.bson)"
@@ -130,7 +138,8 @@ function load_mongo() {
     echo "------------------------------------------------------------"
 }
 
-run_build(){
+# Runs the application build and package phase
+function run_build() {
     echo "------------------------------------------------------------"
     echo "                    Warning"
     echo "------------------------------------------------------------"
@@ -154,8 +163,22 @@ release package."
     echo "Starting build"
 }
 
+# Reloads the MySQL Database
+function relaod_mysql() {
+	echo "Not Implemented: Under Development."
+}
+
+
+# Parses commands and routes them to appropariate functionality
+# as defined above
 if [ "$1" ]; then
     case $1 in
+				"--version")
+					shift
+					echo "Twine-Tools v${VER}"
+					echo "Author: JDU"
+					exit 0
+					;;
         "--check-deps")
             shift
             echo "Checking Dependencies"
@@ -165,11 +188,29 @@ if [ "$1" ]; then
         "--help")
             echo "Usage: $0 [command] [--options]"
             echo
-            echo "--check-deps          Check that all dependencies are installed."
-            echo "--clean               Clean up build artifacts"
-            echo "--test                Run tests"
-            echo "--test-clean          Clean up test requirements"
-            echo "--build               Build and package the application for deployment."
+						echo "---- General -------------------------------------------------------------"
+						echo
+            echo "  --check-deps       Check that all dependencies are installed."
+            echo "  --clean            Clean up build artifacts"
+            echo "  --build            Build and package the application for deployment."
+						echo
+						echo "---- Testing -------------------------------------------------------------"
+						echo
+            echo "  --test             Run tests"
+						echo "  --test --js        Runs only JS Tests"
+						echo "  --test --python    Runs only Python tests"
+						echo "  --test --php       Runs only PHP tests"
+						echo "  --test --none      Convencience for installing the test tools but run on tests"
+						echo "  --test-clean       Cleans up test requirements"
+						echo
+						echo "---- Utilities -----------------------------------------------------------"
+						echo
+						echo "  --load-mongo       Reloads the Mongo collections in siv"
+						echo "  --load-mysql       NOT IMPLEMENTED: Reloads the MySQL Database"
+						echo
+						echo "--- Language -------------------------------------------------------------"
+						echo
+						echo "   UNDER DEVELOPMENT "
             echo
             exit 0
             ;;
