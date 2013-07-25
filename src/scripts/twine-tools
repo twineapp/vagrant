@@ -4,7 +4,7 @@ set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 now=`date +"%m_%d_%Y"`
-VER="0.0.2"
+VER="0.0.3"
 
 BIN=/usr/bin
 
@@ -138,6 +138,17 @@ function load_mongo() {
     echo "------------------------------------------------------------"
 }
 
+# Creates a new JS asset language by copying over the dev language folder
+function new_client_lang() {
+	echo "Creating language files for ${1}"
+	if [ ! -d "var/www/siv-v3/assets/locales/${1}" ]; then
+		cp -r /var/www/siv-v3/assets/locales/dev /var/www/siv-v3/assets/locales/$1
+		echo "${1} created!"
+	else
+		echo "ERROR: ${1} already exists."
+	fi
+}
+
 # Runs the application build and package phase
 function run_build() {
     echo "------------------------------------------------------------"
@@ -168,98 +179,110 @@ function relaod_mysql() {
 	echo "Not Implemented: Under Development."
 }
 
+# Outputs the help info
+function output_help() {
+	echo "Usage: $0 [command] [--options]"
+	echo
+	echo "---- General -------------------------------------------------------------"
+	echo
+	echo "  --help             Outputs this help info"
+	echo "  --check-deps       DEV: Check that all dependencies are installed."
+	echo "  --clean            DEV: Clean up build artifacts"
+	echo "  --build            DEV: Build and package the application for deployment."
+	echo
+	echo "---- Testing -------------------------------------------------------------"
+	echo
+	echo "  --test             Run tests"
+	echo "  --test --js        Runs only JS Tests"
+	echo "  --test --python    Runs only Python tests"
+	echo "  --test --php       Runs only PHP tests"
+	echo "  --test --none      Convencience for installing the test tools but run on tests"
+	echo "  --test-clean       Cleans up test requirements"
+	echo
+	echo "---- Utilities -----------------------------------------------------------"
+	echo
+	echo "  --load-mongo       Reloads the Mongo collections in siv"
+	echo "  --load-mysql       NOT IMPLEMENTED: Reloads the MySQL Database"
+	echo
+	echo "--- Language -------------------------------------------------------------"
+	echo
+	echo "   --new-lang <lang> DEV: Sets up a new client-side language folder/files "
+	echo
+}
 
 # Parses commands and routes them to appropariate functionality
 # as defined above
 if [ "$1" ]; then
-    case $1 in
-				"--version")
-					shift
-					echo "Twine-Tools v${VER}"
-					echo "Author: JDU"
-					exit 0
-					;;
-        "--check-deps")
-            shift
-            echo "Checking Dependencies"
-            cd vagrant
-            pip freeze > /var/www/logs/pip_req.txt
-            shift;;
-        "--help")
-            echo "Usage: $0 [command] [--options]"
-            echo
-						echo "---- General -------------------------------------------------------------"
-						echo
-            echo "  --check-deps       Check that all dependencies are installed."
-            echo "  --clean            Clean up build artifacts"
-            echo "  --build            Build and package the application for deployment."
-						echo
-						echo "---- Testing -------------------------------------------------------------"
-						echo
-            echo "  --test             Run tests"
-						echo "  --test --js        Runs only JS Tests"
-						echo "  --test --python    Runs only Python tests"
-						echo "  --test --php       Runs only PHP tests"
-						echo "  --test --none      Convencience for installing the test tools but run on tests"
-						echo "  --test-clean       Cleans up test requirements"
-						echo
-						echo "---- Utilities -----------------------------------------------------------"
-						echo
-						echo "  --load-mongo       Reloads the Mongo collections in siv"
-						echo "  --load-mysql       NOT IMPLEMENTED: Reloads the MySQL Database"
-						echo
-						echo "--- Language -------------------------------------------------------------"
-						echo
-						echo "   UNDER DEVELOPMENT "
-            echo
-            exit 0
-            ;;
-        "--build")
-            run_build
-            if [ "$2" ]; then
-                echo $2
-            fi
-            shift;;
-        "--test")
-            setup_tests
-            if [ $2 ]; then
-                case $2 in
-                    "--python")
-                        python_tests
-                        shift;;
-                    "--php")
-                        php_tests
-                        shift;;
-                    "--js")
-                        client_tests
-                        shift;;
-                    "--none")
-                        exit 1;;
-                    *)
-                        echo "Unrecognized option passed to --test (--python, --php, --js are options)"
-                        exit 1;;
-                esac
-            else
-                run_all_tests
-            fi
-            echo
-            echo "Test output is available here: /var/www/logs/"
-            shift;;
-        "--test-clean")
-            test_clean
-            shift;;
-        "--load-mongo")
-            load_mongo
-            shift;;
-        "--clean")
-            rm -r /var/www/logs/*.log
-            rm -r /var/www/logs/*.xml
-            rm -r /var/www/logs/*.json
-            shift;;
-        *)
-            echo "Unrecognized option: $1"
-            exit 1;;
-    esac
+	case $1 in
+		"--new-lang")
+			shift
+			if [ "$2" ]; then
+				new_client_lang $2
+			else
+				echo "ERROR: Please specify a language name (i.e. en-US, de-FR, etc...)"
+				exit 1
+			fi
+			shift;;
+		"--version")
+			shift
+			echo "Twine-Tools v${VER}"
+			echo "Author: JDU"
+			exit 0
+			;;
+		"--check-deps")
+			shift
+			echo "Checking Dependencies"
+			pip freeze > /var/www/logs/pip_req.txt
+			shift;;
+		"--help")
+			output_help
+			exit 0;;
+		"--build")
+			run_build
+			if [ "$2" ]; then
+				echo $2
+			fi
+			shift;;
+		"--test")
+			setup_tests
+			if [ $2 ]; then
+				case $2 in
+					"--python")
+						python_tests
+						shift;;
+					"--php")
+						php_tests
+						shift;;
+					"--js")
+						client_tests
+						shift;;
+					"--none")
+						exit 1;;
+					*)
+						echo "Unrecognized option passed to --test (--python, --php, --js are options)"
+						exit 1;;
+				esac
+			else
+				run_all_tests
+			fi
+			echo
+			echo "Test output is available here: /var/www/logs/"
+			shift;;
+		"--test-clean")
+			test_clean
+			shift;;
+		"--load-mongo")
+			load_mongo
+			shift;;
+		"--clean")
+			rm -r /var/www/logs/*.log
+			rm -r /var/www/logs/*.xml
+			rm -r /var/www/logs/*.json
+			shift;;
+		*)
+			echo "Unrecognized option: $1"
+			exit 1;;
+	esac
 fi
 
 
