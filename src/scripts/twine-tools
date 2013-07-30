@@ -4,7 +4,7 @@ set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 now=`date +"%m_%d_%Y"`
-VER="0.0.4"
+VER="0.0.45"
 
 BIN=/usr/bin
 
@@ -193,6 +193,15 @@ function install_lang_tools() {
 function convert_po() {
 	install_lang_tools
 	echo "---- Converting Client-Side Languages to PO -----------------------------"
+	echo
+	echo "Running this tool will overwrite you current .po development files."
+	echo "If you have any unsaved changes in these files they will be lost."
+	echo
+	echo "Do you want to continue (y/n)"
+	read continue
+	if [[ "$continue" != "y" ]]; then
+			exit 1
+	fi
 	# Create the lang dev folder if it doesn't exist
 	if [ ! -d "/var/www/lang-dev" ]; then
 		mkdir -p /var/www/lang-dev
@@ -210,7 +219,7 @@ function convert_po() {
 		fi
 		po_file_path="$po_path/$shortname.po"
 		
-		i18next-conv -l $lang -s $f -t $po_file_path 
+		i18next-conv -l $lang -s $f -t $po_file_path --quiet
 	done
 	echo "  -- PO files are now available at /var/www/lang-dev"
 	echo "---- Conversion Complete ------------------------------------------------"
@@ -220,6 +229,30 @@ function convert_po() {
 function convert_json() {
 	install_lang_tools
 	echo "---- Converting Client-side PO files to JSON ----------------------------"
+	echo
+	echo "Running this tool will overwrite any files located in the assets/locales folder for siv-v3."
+	echo "If you have any unsaved changes in these files they will be lost."
+	echo
+	echo "Do you want to continue (y/n)"
+	read continue
+	if [[ "$continue" != "y" ]]; then
+			exit 1
+	fi
+
+	REMOVAL_PATH="/var/www/lang-dev/"
+	for f in /var/www/lang-dev/**/*.po; do
+		filename=$(basename "$f")
+		shortname="${filename%.*}"
+		rem_start=${f#${REMOVAL_PATH}}
+		lang=${rem_start%/${filename}}
+		json_path="/var/www/siv-v3/assets/locales/$lang"
+		if [ ! -d $json_path ]; then
+			mkdir -p $json_path
+		fi
+		json_file_path="$json_path/$shortname.json"
+
+		i18next-conv -l $lang -s $f -t $json_file_path --quiet
+	done
 	echo "---- Conversion Complete! -----------------------------------------------"
 }
 
@@ -266,6 +299,9 @@ function output_help() {
 # as defined above
 if [ "$1" ]; then
 	case $1 in
+		"--convert-json")
+			convert_json
+			exit 0;;
 		"--convert-po")
 			convert_po
 			exit 0;;
