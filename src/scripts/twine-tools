@@ -176,25 +176,49 @@ release package."
 
 # Install Language Tools
 function install_lang_tools() {
-	echo "---- Installing Client-side language tools ------------------------------"
 	if [ ! -f "/usr/bin/i18next-conv" ]; then
+		echo "---- Installing Client-side language tools ------------------------------"
 		sudo apt-get install python-software-properties
 		sudo add-apt-repository ppa:chris-lea/node.js
 		sudo apt-get update
 		sudo apt-get install nodejs
 		sudo npm install i18next-conv -g
+		echo "---- Installation Complete! ---------------------------------------------"
+	else
+		echo "---- Language Tools Present ---------------------------------------------"
 	fi
-	echo "---- Installation Complete! ---------------------------------------------"
 }
 
 # Convert all JSON files to PO files
 function convert_po() {
+	install_lang_tools
 	echo "---- Converting Client-Side Languages to PO -----------------------------"
+	# Create the lang dev folder if it doesn't exist
+	if [ ! -d "/var/www/lang-dev" ]; then
+		mkdir -p /var/www/lang-dev
+	fi
+
+	REMOVAL_PATH="/var/www/siv-v3/assets/locales/"
+	for f in /var/www/siv-v3/assets/locales/**/*.json; do
+		filename=$(basename "$f")
+		shortname="${filename%.*}"
+		rem_start=${f#${REMOVAL_PATH}}
+		lang=${rem_start%/${filename}}
+		po_path="/var/www/lang-dev/$lang"
+		if [ ! -d $po_path ]; then
+			mkdir -p $po_path
+		fi
+		po_file_path="$po_path/$shortname.po"
+		
+		i18next-conv -l $lang -s $f -t $po_file_path 
+	done
+	echo "  -- PO files are now available at /var/www/lang-dev"
 	echo "---- Conversion Complete ------------------------------------------------"
 }
 
 # Convert PO files to client-side json files
 function convert_json() {
+	install_lang_tools
 	echo "---- Converting Client-side PO files to JSON ----------------------------"
 	echo "---- Conversion Complete! -----------------------------------------------"
 }
@@ -227,13 +251,13 @@ function output_help() {
 	echo "---- Utilities -----------------------------------------------------------"
 	echo
 	echo "  --load-mongo       Reloads the Mongo collections in siv"
-	echo "  --load-mysql       NOT IMPLEMENTED: Reloads the MySQL Database"
+	echo "  --load-mysql       DEV: Reloads the MySQL Database"
 	echo
 	echo "--- Language -------------------------------------------------------------"
 	echo
 	echo "   --lang-install    Installs language tools into the environment."
 	echo "   --convert-po      Converts JSON files to po format"
-	echo "   --convert-json    Converts PO files to JSON format for 18next"
+	echo "   --convert-json    DEV: Converts PO files to JSON format for 18next"
 	echo "   --new-lang <lang> DEV: Sets up a new client-side language folder/files "
 	echo
 }
@@ -242,6 +266,9 @@ function output_help() {
 # as defined above
 if [ "$1" ]; then
 	case $1 in
+		"--convert-po")
+			convert_po
+			exit 0;;
 		"--lang-install")
 			shift
 			install_lang_tools
