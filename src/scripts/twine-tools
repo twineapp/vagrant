@@ -290,7 +290,7 @@ function output_help() {
 	echo
 	echo "   --lang-install    Installs language tools into the environment."
 	echo "   --convert-po      Converts JSON files to po format"
-	echo "   --convert-json    DEV: Converts PO files to JSON format for 18next"
+	echo "   --convert-json    Converts PO files to JSON format for 18next"
 	echo "   --new-lang <lang> DEV: Sets up a new client-side language folder/files "
 	echo
 }
