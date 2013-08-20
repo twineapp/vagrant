@@ -1,0 +1,386 @@
+#!/usr/bin/env bash
+
+set -e
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+now=`date +"%m_%d_%Y"`
+VER="0.0.45"
+
+BIN=/usr/bin
+
+# Sets up all of the dependencies for tests across all the applications
+setup_tests() {
+    echo "--------------------------------------------"
+    echo "Installing Python Test Harness..."
+    if ! $(python -c "import nose" &> /dev/null); then
+        sudo pip install nose
+    fi
+
+    if ! $(python -c "import coverage" &> /dev/null); then
+        sudo pip install coverage
+    fi
+    
+    echo "Installing PHP Test Harness..."
+    if [ ! -f "/usr/local/bin/phpunit" ]; then
+        cd /tmp
+        wget http://pear.phpunit.de/get/phpunit.phar
+        sudo chmod +x phpunit.phar
+        sudo mv phpunit.phar /usr/local/bin/phpunit
+    fi
+
+    echo "Installing JavaScript Test Harness..."
+    cd /tmp
+    
+    # Install git
+    if [ ! -f "/usr/bin/git" ]; then
+        sudo apt-get install -y git-core
+    fi
+    
+    # Install and link phantomjs
+    if [ ! -f "phantomjs-1.9.1-linux-x86_64.tar.bz2" ]; then
+        wget https://phantomjs.googlecode.com/files/phantomjs-1.9.1-linux-x86_64.tar.bz2
+        tar xvjf phantomjs-1.9.1-linux-x86_64.tar.bz2
+        cd phantomjs-1.9.1-linux-x86_64
+        sudo ln -sf `pwd`/bin/phantomjs /usr/local/bin/phantomjs
+        cd ../
+    fi
+    
+    # Install and link casperjs
+    if [ ! -d "casperjs" ]; then
+        git clone git://github.com/n1k0/casperjs.git
+        cd casperjs
+        sudo ln -sf `pwd`/bin/casperjs /usr/local/bin/casperjs
+        cd ../
+    fi
+
+    cd /var/www
+
+    echo "--------------------------------------------"
+}
+
+# Runs all available test types
+run_all_tests() {
+    client_tests
+    python_tests
+    php_tests
+}
+
+# Cleans up test installation
+function test_clean() {
+    echo "Cleaning up Test Environment"
+    if [ -f "/tmp/phantomjs-1.9.1-linux-x86_64.tar.bz2" ]; then
+        sudo rm -r /tmp/phantomjs*
+    fi
+    if [ -d "/tmp/casperjs" ]; then
+        sudo rm -r /tmp/casperjs
+    fi
+    if [ -f "/usr/local/bin/phantomjs" ]; then
+        sudo rm /usr/local/bin/phantomjs
+    fi
+    if [ -f "/usr/local/bin/casperjs" ]; then
+        sudo rm /usr/local/bin/casperjs
+    fi
+    echo "Test Environment Clean"
+}
+
+# Runs python tests and outputs to XUnit format
+function python_tests() {
+
+    echo "------------------------------------------------------------"
+    echo "                      Python Tests"
+    echo "------------------------------------------------------------"
+    echo
+
+    cd /var/www/flaskapps/etl/ETL
+    nosetests -v --exe --with-xunit --xunit-file=/var/www/logs/python_log_$now.xml --cover-xml --cover-xml-file=/var/www/logs/python_coverage_$now.xml
+    cd /var/www
+
+    echo
+}
+
+# Runs client tests and outputs XUnit format
+function client_tests() {
+	echo
+	echo "------------------------------------------------------------"
+	echo "                      Twine Client Tests"
+	echo "------------------------------------------------------------"
+	echo
+	casperjs test /var/www/siv-v3/app/tests/ --xunit=js_log_$now.xml
+	echo
+}
+
+# Runs PHP Tests and outputs to JSON format
+function php_tests() {
+    echo "------------------------------------------------------------"
+    echo "                      PHP Tests"
+    echo "------------------------------------------------------------"
+    echo
+    phpunit --verbose --log-json /var/www/logs/php_tests_$now.json /var/www/siv-v3/api/tests/
+    echo
+}
+
+# Drops and loads up the Mongo collections for siv
+function load_mongo() {
+    echo "------------------------------------------------------------"
+    echo "Searching for Mongo dumps (*.bson)"
+    echo "(note: please ensure all bson files have their collection as their name, i.e. his.bson, de_urban.bson"
+    cd /var/www/vagrant/src/mongo
+    for f in *.bson; do
+        echo "Processing $f..."
+        COLLECTION=`basename $f .bson`
+        mongo siv --eval "db.${COLLECTION}.drop()"
+        mongorestore -d siv -c ${COLLECTION} /var/www/vagrant/src/mongo/${f}
+        echo "Finished processing $f."
+        echo
+    done
+
+    echo "Done loading mongo collections."
+    echo "------------------------------------------------------------"
+}
+
+# Creates a new JS asset language by copying over the dev language folder
+function new_client_lang() {
+	echo "Creating language files for ${1}"
+	if [ ! -d "var/www/siv-v3/assets/locales/${1}" ]; then
+		cp -r /var/www/siv-v3/assets/locales/dev /var/www/siv-v3/assets/locales/$1
+		echo "${1} created!"
+	else
+		echo "ERROR: ${1} already exists."
+	fi
+}
+
+# Runs the application build and package phase
+function run_build() {
+    echo "------------------------------------------------------------"
+    echo "                    Warning"
+    echo "------------------------------------------------------------"
+
+    echo "Building the Twine client libraries may take some time on
+systems with a low amount of resources and depending on the
+machines configuration. It is recommended that you use one
+of the pre-built deploy backages instead of attempting to 
+build the application, unless you are creating a new 
+release package."
+
+    echo
+
+    echo "Do you want to continue (y/n)"
+    read continue
+    if [[ "$continue" != "y" ]]; then
+        exit 1
+    fi
+    echo
+
+    echo "Starting build"
+}
+
+# Install Language Tools
+function install_lang_tools() {
+	if [ ! -f "/usr/bin/i18next-conv" ]; then
+		echo "---- Installing Client-side language tools ------------------------------"
+		sudo apt-get install python-software-properties
+		sudo add-apt-repository ppa:chris-lea/node.js
+		sudo apt-get update
+		sudo apt-get install nodejs
+		sudo npm install i18next-conv -g
+		echo "---- Installation Complete! ---------------------------------------------"
+	else
+		echo "---- Language Tools Present ---------------------------------------------"
+	fi
+}
+
+# Convert all JSON files to PO files
+function convert_po() {
+	install_lang_tools
+	echo "---- Converting Client-Side Languages to PO -----------------------------"
+	echo
+	echo "Running this tool will overwrite you current .po development files."
+	echo "If you have any unsaved changes in these files they will be lost."
+	echo
+	echo "Do you want to continue (y/n)"
+	read continue
+	if [[ "$continue" != "y" ]]; then
+			exit 1
+	fi
+	# Create the lang dev folder if it doesn't exist
+	if [ ! -d "/var/www/lang-dev" ]; then
+		mkdir -p /var/www/lang-dev
+	fi
+
+	REMOVAL_PATH="/var/www/siv-v3/assets/locales/"
+	for f in /var/www/siv-v3/assets/locales/**/*.json; do
+		filename=$(basename "$f")
+		shortname="${filename%.*}"
+		rem_start=${f#${REMOVAL_PATH}}
+		lang=${rem_start%/${filename}}
+		po_path="/var/www/lang-dev/$lang"
+		if [ ! -d $po_path ]; then
+			mkdir -p $po_path
+		fi
+		po_file_path="$po_path/$shortname.po"
+		
+		i18next-conv -l $lang -s $f -t $po_file_path --quiet
+	done
+	echo "  -- PO files are now available at /var/www/lang-dev"
+	echo "---- Conversion Complete ------------------------------------------------"
+}
+
+# Convert PO files to client-side json files
+function convert_json() {
+	install_lang_tools
+	echo "---- Converting Client-side PO files to JSON ----------------------------"
+	echo
+	echo "Running this tool will overwrite any files located in the assets/locales folder for siv-v3."
+	echo "If you have any unsaved changes in these files they will be lost."
+	echo
+	echo "Do you want to continue (y/n)"
+	read continue
+	if [[ "$continue" != "y" ]]; then
+			exit 1
+	fi
+
+	REMOVAL_PATH="/var/www/lang-dev/"
+	for f in /var/www/lang-dev/**/*.po; do
+		filename=$(basename "$f")
+		shortname="${filename%.*}"
+		rem_start=${f#${REMOVAL_PATH}}
+		lang=${rem_start%/${filename}}
+		json_path="/var/www/siv-v3/assets/locales/$lang"
+		if [ ! -d $json_path ]; then
+			mkdir -p $json_path
+		fi
+		json_file_path="$json_path/$shortname.json"
+
+		i18next-conv -l $lang -s $f -t $json_file_path --quiet
+	done
+	echo "---- Conversion Complete! -----------------------------------------------"
+}
+
+# Reloads the MySQL Database
+function relaod_mysql() {
+	echo "Not Implemented: Under Development."
+}
+
+# Outputs the help info
+function output_help() {
+	echo "Usage: $0 [command] [--options]"
+	echo
+	echo "---- General -------------------------------------------------------------"
+	echo
+	echo "  --help             Outputs this help info"
+	echo "  --check-deps       DEV: Check that all dependencies are installed."
+	echo "  --clean            DEV: Clean up build artifacts"
+	echo "  --build            DEV: Build and package the application for deployment."
+	echo
+	echo "---- Testing -------------------------------------------------------------"
+	echo
+	echo "  --test             Run tests"
+	echo "  --test --js        Runs only JS Tests"
+	echo "  --test --python    Runs only Python tests"
+	echo "  --test --php       Runs only PHP tests"
+	echo "  --test --none      Convencience for installing the test tools but run on tests"
+	echo "  --test-clean       Cleans up test requirements"
+	echo
+	echo "---- Utilities -----------------------------------------------------------"
+	echo
+	echo "  --load-mongo       Reloads the Mongo collections in siv"
+	echo "  --load-mysql       DEV: Reloads the MySQL Database"
+	echo
+	echo "--- Language -------------------------------------------------------------"
+	echo
+	echo "   --lang-install    Installs language tools into the environment."
+	echo "   --convert-po      Converts JSON files to po format"
+	echo "   --convert-json    Converts PO files to JSON format for 18next"
+	echo "   --new-lang <lang> DEV: Sets up a new client-side language folder/files "
+	echo
+}
+
+# Parses commands and routes them to appropariate functionality
+# as defined above
+if [ "$1" ]; then
+	case $1 in
+		"--convert-json")
+			convert_json
+			exit 0;;
+		"--convert-po")
+			convert_po
+			exit 0;;
+		"--lang-install")
+			shift
+			install_lang_tools
+			exit 0
+			;;
+		"--new-lang")
+			shift
+			if [ "$2" ]; then
+				new_client_lang $2
+			else
+				echo "ERROR: Please specify a language name (i.e. en-US, de-FR, etc...)"
+				exit 1
+			fi
+			shift;;
+		"--version")
+			shift
+			echo "Twine-Tools v${VER}"
+			echo "Author: JDU"
+			exit 0
+			;;
+		"--check-deps")
+			shift
+			echo "Checking Dependencies"
+			pip freeze > /var/www/logs/pip_req.txt
+			shift;;
+		"--help")
+			output_help
+			exit 0;;
+		"--build")
+			run_build
+			if [ "$2" ]; then
+				echo $2
+			fi
+			shift;;
+		"--test")
+			setup_tests
+			if [ $2 ]; then
+				case $2 in
+					"--python")
+						python_tests
+						shift;;
+					"--php")
+						php_tests
+						shift;;
+					"--js")
+						client_tests
+						shift;;
+					"--none")
+						exit 1;;
+					*)
+						echo "Unrecognized option passed to --test (--python, --php, --js are options)"
+						exit 1;;
+				esac
+			else
+				run_all_tests
+			fi
+			echo
+			echo "Test output is available here: /var/www/logs/"
+			shift;;
+		"--test-clean")
+			test_clean
+			shift;;
+		"--load-mongo")
+			load_mongo
+			shift;;
+		"--clean")
+			rm -r /var/www/logs/*.log
+			rm -r /var/www/logs/*.xml
+			rm -r /var/www/logs/*.json
+			shift;;
+		*)
+			echo "Unrecognized option: $1"
+			exit 1;;
+	esac
+fi
+
+
+
+
