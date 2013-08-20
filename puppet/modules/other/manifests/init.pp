@@ -95,9 +95,9 @@ class other
 
     file 
     { 
-        "/var/www/siv-v3/app/config-local.json":
+        "/var/www/siv-v3/app/config.json":
             ensure  => present,
-            source  => "/var/www/vagrant/puppet/templates/config-local.json",
+            source  => "/var/www/vagrant/puppet/templates/config.json",
             require => Package['apache2'],
     }
 
@@ -106,15 +106,6 @@ class other
 	owner => "www-data",
 	group => "www-data",
 	mode => 777
-    }
-    
-    exec
-    {
-        "config_local.py":
-            command => 'cp /var/www/vagrant/puppet/templates/config_local.py /var/www/flaskapps/etl/ETL/config_local.py',
-            timeout => 3600,
-            require => Exec["etl-setup"],
-            onlyif  => 'test -f /var/www/flaskapps/etl/setup.py',
     }
    
     file 

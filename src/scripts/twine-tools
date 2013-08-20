@@ -14,6 +14,8 @@ MONG_DB      = "siv"
 LANG_JSON    = "/var/www/siv-v3/assets/locales/"
 # Default lang destination
 LANG_PO      = "/var/www/locale-dev/"
+# SQL Source Path
+SQL_FOLDER   = "/var/www/vagrant/src/sql"
 
 def install_language_tools(args):
 	""" Installs the tools needed for language conversion """
@@ -23,6 +25,27 @@ def install_language_tools(args):
 		subprocess.call("sudo apt-get update", shell=True)
 		subprocess.call("sudo apt-get install -y nodejs", shell=True)
 		subprocess.call("sudo npm install i18next-conv -g", shell=True)
+
+def sql_apply_patches(args):
+	print "----------------------------------------------------"
+	print " Applying SQL patched"
+	files = []
+	for source_file, dir in findFiles(r'%s' % (SQL_FOLDER), 'siv.[0123456789][0123456789].sql'):
+		print source_file
+		files.append(source_file)
+
+	sorted_list = list(files)
+
+	for item in sorted_list:
+		print " Applying patch: %s" % (item)
+		command = "mysql -u root -ppwd --default_character_set utf8 < %s" % (item)
+		subprocess.call(command, shell=True)
+		print " %s applied." % (item)
+	
+	print ""
+	print " Application of patches complete"
+	print "----------------------------------------------------"
+
 
 def lang_manager(args):
 	""" Handles conversion back and forth of language files """
@@ -262,6 +285,11 @@ def main():
 		help="The target file where the config file should be saved.",
 		default="/var/www/siv-v3/app/config.json")
 	parser_config.set_defaults(func=generate_client_config)
+
+	# SQL Patching
+	parser_sql_patch = subparsers.add_parser('sql-patch',
+		help="Applies any patches of the format siv.[0-9].sql.")
+	parser_sql_patch.set_defaults(func=sql_apply_patches)
 
 	# Get the args
 	args = parser.parse_args()
