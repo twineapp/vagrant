@@ -95,9 +95,9 @@ class other
 
     file 
     { 
-        "/var/www/siv-v3/app/config.json":
+        "/var/www/siv-v3/app/config-local.json":
             ensure  => present,
-            source  => "/var/www/vagrant/puppet/templates/config.json",
+            source  => "/var/www/vagrant/puppet/templates/config-local.json",
             require => Package['apache2'],
     }
 
@@ -107,6 +107,7 @@ class other
 	group => "www-data",
 	mode => 777
     }
+
    
     file 
     { 
