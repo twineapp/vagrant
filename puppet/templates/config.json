@@ -7,13 +7,15 @@
     "data_path": "/siv-v3/assets/data",
     "default_lang": "en",
     "demo_message": "<p>This feature is currently disabled on this Demo site. Please go to <a href=\"http://twine.unhcr.org/\">http://twine.unhcr.org/</a> and register for access to the production Twine application.</p>",
-    "demo_mode": "0",
+    "demo_mode": false,
     "etl_path": "/etl",
     "global_path_assets": "/siv-v3/assets",
     "header_class": "siv-header-demo",
     "logo_path": "assets/images/logos/siv-logo-demo.png",
-    "offline": "0",
+    "offline": false,
     "root_path": "/siv-v3",
     "user_cookie_name": "webhis_user",
-    "version": "3.18"
+    "version": "3.18",
+		"ping_interval": 30000,
+		"config_interval": 50000
 }

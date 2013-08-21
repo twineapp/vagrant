@@ -113,19 +113,15 @@ def generate_client_config(args):
 		cfg_dict[item[0]] = item[1]
 
 	for key in cfg_dict.keys():
-		if cfg_dict[key] == "1":
+		if cfg_dict[key] == "true":
 			cfg_dict[key] = True
 
-		if cfg_dict[key] == "0":
-			cfg_dict[key] == False
-
-	print json.dumps(cfg_dict)
+		if cfg_dict[key] == "false":
+			cfg_dict[key] = False
 
 	f = open(args.dest, 'w')
 	f.write(json.dumps(cfg_dict, sort_keys=True, indent=4, separators=(',', ': ')))
 	f.close()
-
-
 
 def install_test_harness(args):
 	""" Installs and sets up all the requirements for the test tools. """
