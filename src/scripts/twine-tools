@@ -28,13 +28,12 @@ def install_language_tools(args):
 
 def sql_apply_patches(args):
 	print "----------------------------------------------------"
-	print " Applying SQL patched"
+	print " Applying SQL patches"
 	files = []
 	for source_file, dir in findFiles(r'%s' % (SQL_FOLDER), 'siv.[0123456789][0123456789].sql'):
-		print source_file
 		files.append(source_file)
 
-	sorted_list = list(files)
+	sorted_list = sorted(list(files))
 
 	for item in sorted_list:
 		print " Applying patch: %s" % (item)
