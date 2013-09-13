@@ -16,10 +16,10 @@
 		allow from all
 	</Directory>
 	
-	WSGIDaemonProcess etl processes=1 maximum-requests=500 threads=2
-        WSGIScriptAlias /etl /var/www/flaskapps/etl/ETL/etl.wsgi
-	<Directory /var/www/flaskapps/etl/ETL>
-		WSGIProcessGroup etl
+	WSGIDaemonProcess api-data processes=1 maximum-requests=500 threads=2
+        WSGIScriptAlias /api-data /var/www/siv-v3/api-data/ETL/etl.wsgi
+	<Directory /var/www/siv-v3/api-data/ETL>
+		WSGIProcessGroup api-data
 		WSGIApplicationGroup %{GLOBAL}
 		Order deny,allow
 		Allow from all
