@@ -26,7 +26,7 @@ class other
         'etl-setup':
             command => '/var/www/vagrant/src/scripts/etl-setup.sh',
             require => Package['python-setuptools'],
-            onlyif  => 'test -f /var/www/flaskapps/etl/setup.py',
+            onlyif  => 'test -f /var/www/siv-v3/api-data/setup.py',
     }
 
     exec { "setup-twine-tools":
