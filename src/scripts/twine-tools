@@ -384,3 +384,304 @@ fi
 
 
 
+=======
+#!/usr/bin/python
+
+import getopt, sys, time, os, shutil, fnmatch, json
+import subprocess, codecs, argparse, datetime
+import ConfigParser
+
+# Folder where test logs should be stored
+LOG_FOLDER   = "/var/www/logs"
+# The version of this tool
+VER          = "0.1.0"
+# Mongo db that should be used for reloading mongo
+MONG_DB      = "siv"
+# Default Lang source
+LANG_JSON    = "/var/www/siv-v3/assets/locales/"
+# Default lang destination
+LANG_PO      = "/var/www/locale-dev/"
+# SQL Source Path
+SQL_FOLDER   = "/var/www/vagrant/src/sql"
+
+def install_language_tools(args):
+	""" Installs the tools needed for language conversion """
+	if os.path.exists("/usr/bin/i18next-conv") is False:
+		subprocess.call("sudo apt-get install -y python-software-properties", shell=True)
+		subprocess.call("sudo add-apt-repository ppa:chris-lea/node.js", shell=True)
+		subprocess.call("sudo apt-get update", shell=True)
+		subprocess.call("sudo apt-get install -y nodejs", shell=True)
+		subprocess.call("sudo npm install i18next-conv -g", shell=True)
+
+def sql_apply_patches(args):
+	print "----------------------------------------------------"
+	print " Applying SQL patches"
+	files = []
+	for source_file, dir in findFiles(r'%s' % (SQL_FOLDER), 'siv.[0123456789][0123456789].sql'):
+		files.append(source_file)
+
+	sorted_list = sorted(list(files))
+
+	for item in sorted_list:
+		print " Applying patch: %s" % (item)
+		command = "mysql -u root -ppwd --default_character_set utf8 < %s" % (item)
+		subprocess.call(command, shell=True)
+		print " %s applied." % (item)
+	
+	print ""
+	print " Application of patches complete"
+	print "----------------------------------------------------"
+
+
+def lang_manager(args):
+	""" Handles conversion back and forth of language files """
+	install_language_tools(args)
+
+	print "------------------------------------------------------"
+	print " Converting Client-Side PO to JSON"
+	print ""
+	print (" Running this tool will overwrite any files\n"
+		" located in the assets/locales folder in siv-v3.")
+	print " If you have any unsaved changes they will be lost."
+	print ""
+	answer = raw_input(" Do you want to continue (y/n):")
+
+	if answer != "y":
+		print " Cancelled."
+		return
+
+	if args.dest is None and args.format == "json":
+		args.dest = LANG_JSON
+		args.src = LANG_PO
+	elif args.dest is None and args.format == "po":
+		args.dest = LANG_PO
+		args.src = LANG_JSON
+
+	source_type = ""
+	source_ext = ""
+	if args.format == "po":
+		source_type = '*.json'
+		source_ext = "json"
+	elif args.format == "json":
+		source_type = "*.po"
+		source_ext = "po"
+
+	for source_file, dir in findFiles(r'%s' % (args.src), source_type):
+		filename = os.path.splitext(source_file)[0].split('/')[-1]
+
+		file_replace = "%s.%s" % (filename, source_ext)
+		path_string = source_file.replace(args.src, "").replace(file_replace, "")
+
+		out_file = "%s.%s" % (filename, args.format)
+		write_path = os.path.join(args.dest, path_string)
+		write_file = os.path.join(write_path, out_file)
+
+		# Create folder
+		mkdir_cmd = "sudo mkdir -p %s" % (write_path)
+		subprocess.call(mkdir_cmd, shell=True)
+
+		convert_cmd = "sudo i18next-conv -l %s -s %s -t %s --quiet" % (path_string.rstrip('/'), source_file, write_file)
+		subprocess.call(convert_cmd, shell=True)
+
+	print ""
+	print " Conversion Complete."
+	print "------------------------------------------------------"
+
+def generate_client_config(args):
+	cfg_p = ConfigParser.ConfigParser()
+	
+	cfg_dict = {}
+
+	cfg_p.read(args.src)
+
+	source_config = cfg_p.items('client')
+	for item in source_config:
+		cfg_dict[item[0]] = item[1]
+
+	for key in cfg_dict.keys():
+		if cfg_dict[key] == "true":
+			cfg_dict[key] = True
+
+		if cfg_dict[key] == "false":
+			cfg_dict[key] = False
+
+	f = open(args.dest, 'w')
+	f.write(json.dumps(cfg_dict, sort_keys=True, indent=4, separators=(',', ': ')))
+	f.close()
+
+def install_test_harness(args):
+	""" Installs and sets up all the requirements for the test tools. """
+	# Check to see if nose is installed
+	try:
+		import nose
+	except ImportError:
+		subprocess.call("sudo pip install nose")
+
+	# Check to see if coverage is installed
+	try:
+		import coverage
+	except ImportError:
+		subprocess.call("sudo pip install coverage")
+
+	# Check and install phpunit
+	if os.path.exists("/usr/local/bin/phpunit") is False:
+		subprocess.call("wget -P /tmp http://pear.phpunit.de/get/phpunit.phar", shell=True)
+		subprocess.call("sudo chmod +x /tmp/phpunit.phar", shell=True)
+		subprocess.call(" sudo mv /tmp/phpunit.phar /usr/local/bin/phpunit", shell=True)
+
+	# Check and install git
+	if os.path.exists("/usr/bin/git") is False:
+		subprocess.call("sudo apt-get install -y git-core", shell=True)
+
+	# Check and install phantomjs
+	if os.path.exists("/usr/local/bin/phantomjs") is False:
+		subprocess.call('wget -P /tmp https://phantomjs.googlecode.com/files/phantomjs-1.9.1-linux-x86_64.tar.bz2', shell=True)
+		subprocess.call("mkdir /tmp/phantomjs", shell=True)
+		subprocess.call("tar xvjf /tmp/phantomjs-1.9.1-linux-x86_64.tar.bz2 -C /tmp ", shell=True)
+		subprocess.call("sudo ln -sf /tmp/phantomjs-1.9.1-linux-x86_64/bin/phantomjs /usr/local/bin/phantomjs", shell=True)
+
+	# Check and install Casperjs
+	if os.path.exists("/usr/local/bin/casperjs") is False:
+		subprocess.call("git clone git://github.com/n1k0/casperjs.git /tmp/casperjs", shell=True)
+		subprocess.call("sudo ln -sf /tmp/casperjs/bin/casperjs /usr/local/bin/casperjs")
+
+def clean_test_logs():
+	""" Cleans and removes the test xml and log files """
+	for log_file, dir in findFiles(r'%s' % (LOG_FOLDER), '*.xml'):
+		os.remove(log_file)
+
+	for json_file, dir in findFiles(r'%s' % (LOG_FOLDER), '*.json'):
+		os.remove(json_file)
+
+def testing_tools(args):
+	""" The main testing function, will run all tests and install
+	test tools for the testing setup """
+
+	if args.clean is True:
+		clean_test_logs()
+		return
+
+	install_test_harness(args)
+
+	# Figure out what options were passed
+	if args.language == "all":
+		run_python_tests(args)
+		run_php_tests(args)
+		run_js_tests(args)
+	elif args.language == "python":
+		run_python_tests(args)
+	elif args.language == "php":
+		run_php_tests(args)
+	elif args.language == "js":
+		run_js_tests(args)
+
+def run_python_tests(args):
+	""" Runs the python tests """
+	install_test_harness(args)
+	command = "nosetests -w /var/www/flaskapps/etl/ETL -v --exe --with-xunit --xunit-file=%s/python_log_%s.xml --cover-xml --cover-xml-file=%s/python_coverage_%s.xml" % (LOG_FOLDER, datetime.datetime.now().strftime("%Y-%m-%d"), LOG_FOLDER, datetime.datetime.now().strftime("%Y=%m-%d"))
+	subprocess.call(command, shell=True)
+
+def run_php_tests(args):
+	""" Run the php tests """
+	install_test_harness(args)
+	command = "phpunit --verbose --log-json %s/php_tests_%s.json /var/www/siv-v3/api/tests/" % (LOG_FOLDER, datetime.datetime.now().strftime("%Y-%m-%d"))
+	subprocess.call(command, shell=True)
+
+def run_js_tests(args):
+	""" Run the JavaScript Tests """
+	install_test_harness(args)
+	command = "casperjs test /var/www/siv-v3/app/tests/ --xunit=%s/js_log_%s.xml" % (LOG_FOLDER, datetime.datetime.now().strftime('%Y-%m-%d'))
+	subprocess.call(command, shell=True)
+
+def findFiles(path, filter):
+	""" Utility function which finds files in a pth """
+	for root, dirs, files in os.walk(path):
+		for file in fnmatch.filter(files, filter):
+			yield (os.path.join(root, file), root)
+
+def reload_mongo_db(args):
+	""" Reload the mongo database """
+	print "----------------------------------------------------"
+	print " Mongo DB Restore"
+	print " Searching for mongo dumps (*.bson)"
+
+	for bson_file, dir in findFiles(r'%s' % ("/var/www/vagrant/src/mongo"), '*.bson'):
+		print " ~ Processing %s \n" % (bson_file)
+		parts = bson_file.split('/')
+		filename = parts[-1].split(".")[0]
+
+		# Drop the current database
+		drop_cmd = "mongo %s --eval 'db.%s.drop();'" % (MONG_DB, filename)
+		subprocess.call(drop_cmd, shell=True)
+		
+		# Run the restore
+		restore_cmd = "mongorestore -d %s -c %s %s" % (MONG_DB, filename, bson_file)
+		subprocess.call(restore_cmd, shell=True)
+		print " ~ Finished"
+
+	print " Done reloading mongo"
+	print "----------------------------------------------------"
+
+def main():
+	""" Responsible for parsing arguments and routing to appropriate functions """
+	# Top-level parser
+	parser = argparse.ArgumentParser(description="Twine Tools", prog="twine-tools")
+	parser.add_argument("--foo", action="store_true", help="foo help")
+	subparsers = parser.add_subparsers()
+
+	# The Testing Tools
+	parser_testing = subparsers.add_parser('test', help="Twine testing harness")
+	parser_testing.add_argument('-l', '--language', 
+		type=str, 
+		help="The language to test. Default is 'all'",
+		choices=["python","php","js","all"],
+		default="all")
+	parser_testing.add_argument('--clean',
+		help="Remove all log files for tests",
+		action="store_true")
+	parser_testing.set_defaults(func=testing_tools)
+
+	# Reloading Mongo Db
+	parser_mongo = subparsers.add_parser("mongo-reload", help="Reloads the Mongo Databases")
+	parser_mongo.set_defaults(func=reload_mongo_db)
+
+	# Language Tools
+	parser_lang = subparsers.add_parser("lang",
+		help="Tools for dealing with language files.")
+	parser_lang.add_argument('format',
+		help="The format to convert to in dest. Required",
+		choices=['po','json'])
+	parser_lang.add_argument('-s', '--src',
+		help="The location to get files from.")
+	parser_lang.add_argument('-d', '--dest',
+		help="The destination to write to.")
+	parser_lang.set_defaults(func=lang_manager)
+
+	# Generating Client config
+	parser_config = subparsers.add_parser("generate-config",
+		help="Generate the client-side config from siv.ini")
+	parser_config.add_argument('-s', '--src',
+		help="The path to the siv.ini file.",
+		default="/var/www/siv-v3/siv.ini")
+	parser_config.add_argument('-d', '--dest',
+		help="The target file where the config file should be saved.",
+		default="/var/www/siv-v3/app/config.json")
+	parser_config.set_defaults(func=generate_client_config)
+
+	# SQL Patching
+	parser_sql_patch = subparsers.add_parser('sql-patch',
+		help="Applies any patches of the format siv.[0-9].sql.")
+	parser_sql_patch.set_defaults(func=sql_apply_patches)
+
+	# Get the args
+	args = parser.parse_args()
+	# Run the appropriate function
+	args.func(args)
+
+	# Exit
+	return 0
+
+if __name__ == "__main__":
+	""" The main application """
+	rc = main()
+	sys.exit( rc )

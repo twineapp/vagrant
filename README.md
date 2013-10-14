@@ -23,7 +23,7 @@ With Packages:
 2. Create a folder named 'twineapp/' and clone this repository (twineapp/vagrant).  
 3. Clone / copy in the twine repos and datasets  
     3.1. Clone 'siv-v3' github repository into 'twineapp/siv-v3/' directory (~55MB)  
-    3.2. **(optional)** Clone 'etl' github repository into 'twineapp/flaskapps/etl/' directory (~0.3MB)  
+    3.2. **(optional)** Clone 'api-data' github repository into 'twineapp/siv-v3/api-data/' directory (~0.3MB)  
     3.3. **(optional)** Clone 'documentation' github repository into 'twineapp/documentation/' directory  
     3.4. Copy twine mysql build to 'twineapp/vagrant/src/mysql/' directory (~83MB)  
     3.5. **(optional)** Copy twine mongodb build to 'twineapp/vagrant/src/mongo/' directory (~288MB)
@@ -33,7 +33,7 @@ With Packages:
 - "vagrant up" starts the virtual machine
 - "vagrant suspend" suspends the vm, this is normally how you would end your work session
 - "vagrant halt" shuts down the vm, you would do this to autoload additional db patches for example
-- "vagrant reload" is equivelent to a halt and up, and should be run after changes to the vagrant repo
+- "vagrant reload" is equivelent to a halt and up, and should be run after changes to the vagrant repo. Before a reload, delete the siv_% dbs (you can run siv.drop.sql in phpmyadmin to do this)
 - "vagrant destroy" completely removes the vm from your machine. You would do this to save disk space if you won't be working on twine for a while, or to do a full rebuild after significant changes to the vagrant repo
 - command reference: http://docs.vagrantup.com/v2/cli/index.html
 
