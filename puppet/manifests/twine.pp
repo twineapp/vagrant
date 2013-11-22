@@ -19,6 +19,7 @@ include phpmyadmin
 include mongo
 include python
 include nodejs
+include grunt
 include etl
 include wsgi
 
