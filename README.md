@@ -5,6 +5,7 @@ Virtual OS: Ubuntu 12.04 (Precise) x64
 With Packages:
 - Apache
 - MySQL
+- PostgreSQL
 - PHP
 - phpMyAdmin
 - Curl
@@ -53,6 +54,12 @@ With Packages:
 ## VM Passwords
 - mysql username:password are root:pwd
 - rockmongo username:password are admin:admin
+- postgresql username:password are admin:pwd
+
+## VM URLs
+- http://192.168.50.4/phpmyadmin
+- http://192.168.50.4/rockmongo
+- http://192.168.50.4/phppgadmin
 
 ## Known issues
 - **Hardware virtualization.** Issues have been reported in Windows 7 when hardward virtualization was not enabled in the system bios. http://www.virtualbox.org/manual/ch10.html
