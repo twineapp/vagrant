@@ -21,6 +21,7 @@ include mongo
 include python
 include etl
 include wsgi
+include twine
 
 exec 
 { 
