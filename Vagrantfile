@@ -8,7 +8,6 @@ Vagrant.configure("2") do |config|
         inv_config.vm.provider :virtualbox do |vb|
             vb.customize ["modifyvm", :id, "--memory", 2048, "--cpus", 2]
         end
-        inv_config.ssh.max_tries = 360
         
         #inv_config.vm.network :forwarded_port, guest: 80, host: 8081
         #inv_config.vm.network :forwarded_port, guest: 3306, host: 3316
@@ -16,7 +15,7 @@ Vagrant.configure("2") do |config|
 
         inv_config.vm.hostname = "twine"
         
-        inv_config.vm.synced_folder "../", "/var/www", :extra => "dmode=777,fmode=777"
+        inv_config.vm.synced_folder "../", "/var/www", :mount_options => ["dmode=777","fmode=777"]
 
         inv_config.vm.provision :puppet do |puppet|
             puppet.manifests_path = "puppet/manifests"
