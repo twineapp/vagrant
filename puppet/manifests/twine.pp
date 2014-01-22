@@ -14,12 +14,16 @@ include bootstrap
 include other
 include apache
 include php
+include postgresql
 include mysql
 include phpmyadmin
 include mongo
 include python
+include nodejs
+include grunt
 include etl
 include wsgi
+include twine
 
 exec 
 { 
