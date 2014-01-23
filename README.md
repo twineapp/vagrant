@@ -53,6 +53,7 @@ With Packages:
 ## VM Passwords
 - mysql username:password are root:pwd
 - rockmongo username:password are admin:admin
+- postgresql username:password are admin:admin
 
 ## Known issues
 - **Hardware virtualization.** Issues have been reported in Windows 7 when hardward virtualization was not enabled in the system bios. http://www.virtualbox.org/manual/ch10.html
