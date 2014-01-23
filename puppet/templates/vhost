@@ -16,9 +16,9 @@
 		allow from all
 	</Directory>
 	
-	WSGIDaemonProcess api-data processes=1 maximum-requests=500 threads=2
-        WSGIScriptAlias /api-data /var/www/siv-v3/api-data/ETL/etl.wsgi
-	<Directory /var/www/siv-v3/api-data/ETL>
+	WSGIDaemonProcess api-data processes=2 maximum-requests=500 threads=2
+	WSGIScriptAlias /api-data /var/www/siv-v3/api-data/twine/twine.wsgi
+	<Directory /var/www/siv-v3/api-data/twine>
 		WSGIProcessGroup api-data
 		WSGIApplicationGroup %{GLOBAL}
 		Order deny,allow
