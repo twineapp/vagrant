@@ -21,14 +21,6 @@ class other
             require => Exec['pecl-oauth-install'],
     }
 
-    exec 
-    { 
-        'etl-setup':
-            command => '/var/www/vagrant/src/scripts/etl-setup.sh',
-            require => Package['python-setuptools'],
-            onlyif  => 'test -f /var/www/siv-v3/api-data/setup.py',
-    }
-
     exec { "setup-twine-tools":
         command => 'sudo ln -sf /var/www/vagrant/src/scripts/twine-tools /usr/bin/twine-tools'
     }
@@ -99,13 +91,6 @@ class other
             ensure  => present,
             source  => "/var/www/vagrant/puppet/templates/config.json",
             require => Package['apache2'],
-    }
-
-    file { "/var/www/logs":
-	ensure => directory,
-	owner => "www-data",
-	group => "www-data",
-	mode => 777
     }
    
     file 
