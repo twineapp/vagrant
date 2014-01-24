@@ -26,5 +26,6 @@ Vagrant.configure("2") do |config|
         end
 
         inv_config.vm.provision :shell, :path => "src/scripts/mysql.build.sh"
+        inv_config.vm.provision :shell, :inline => "sudo -u postgres bash /var/www/vagrant/src/scripts/postgresql.build.sh"
     end
 end

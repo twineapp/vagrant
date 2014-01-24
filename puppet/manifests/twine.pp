@@ -14,6 +14,7 @@ include bootstrap
 include other
 include apache
 include php
+include postgresql
 include mysql
 include phpmyadmin
 include mongo
