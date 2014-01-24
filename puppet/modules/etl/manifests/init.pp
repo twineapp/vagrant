@@ -22,21 +22,14 @@ class etl
 			command    => "sudo pip install pymongo",
 			require    => [Package["python-pip"]]
 		}
-
-		exec { "install-mysql-connector":
-			command    => "sudo pip install mysql-connector-python",
-			require    => [Package["python-pip"]]
-		}
 	
     exec { "install-apscheduler":
         command     => "pip install apscheduler",
         require     => [Package['python-pip']] 
     }
 		
-		/* Uncomment and remove "install-mysql-connector" once postgres migration complete
-		exec { "install-psycopg2":
-			command    => "sudo pip install psycopg2",
-			require    => [Package["build-essential"], Package["python-dev"], Package['python-pip']]
+		package { "python-psycopg2":
+			ensure     => present,
+			require    => Exec['postgresql-setup']
 		}
-		*/
 }
