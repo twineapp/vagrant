@@ -2,6 +2,7 @@ class postgresql
 {
     $packages = [
         "postgresql-9.3-postgis",
+        "postgresql-contrib-9.3",
         "pgadmin3",
         "php5-pgsql",
         "phppgadmin"
