@@ -23,6 +23,7 @@ include nodejs
 include grunt
 include etl
 include wsgi
+include twine
 
 exec 
 { 
