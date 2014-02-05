@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo "Initializing PostgreSQL datadrive and PostGIS extension..."
-/etc/init.d/postgresql stop
+sudo service postgresql stop
 mkdir -p /var/datadrive/postgresql
 chmod -R 700 /var/datadrive/postgresql
 chown -R postgres.postgres /var/datadrive/postgresql
@@ -14,4 +14,3 @@ sudo -u postgres psql -c "CREATE EXTENSION postgis_topology;"
 sudo -u postgres psql -c 'CREATE EXTENSION "uuid-ossp";'
 echo "Allowing connections to phpPgAdmin from all"
 sed 's,allow from 127.0.0.0/255.0.0.0 ::1/128,allow from all,g' /etc/apache2/conf.d/phppgadmin > tmpfile && mv tmpfile /etc/apache2/conf.d/phppgadmin
-sudo service apache2 restart

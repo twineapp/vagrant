@@ -6,37 +6,34 @@
 
 echo "... creating twine database"
 #terminate current connections
-psql -q -c "SELECT pg_terminate_backend(pid) FROM pg_stat_get_activity(NULL::integer) WHERE datid=(SELECT oid from pg_database where datname = 'twine');" > /dev/null 2>&1
+sudo -u postgres psql -q -c "SELECT pg_terminate_backend(pid) FROM pg_stat_get_activity(NULL::integer) WHERE datid=(SELECT oid from pg_database where datname = 'twine');" > /dev/null 2>&1
 #drop database
-psql -q -c "DROP DATABASE IF EXISTS twine;" > /dev/null 2>&1
+sudo -u postgres psql -q -c "DROP DATABASE IF EXISTS twine;" > /dev/null 2>&1
 # create database
-psql -q -c "CREATE DATABASE twine WITH TEMPLATE=template0 OWNER=admin ENCODING='UTF8' LC_COLLATE='en_US.utf8' LC_CTYPE='en_US.utf8';"
+sudo -u postgres psql -q -c "CREATE DATABASE twine WITH TEMPLATE=template0 OWNER=admin ENCODING='UTF8' LC_COLLATE='en_US.utf8' LC_CTYPE='en_US.utf8';"
 
 echo "... changing directory to /var/www/vagrant/src/postgresql"
 cd /var/www/vagrant/src/postgresql
 
 echo "... creating siv_app schema and tables"
-psql -q twine < siv_app.sql > /dev/null 2>&1
+sudo -u postgres psql -q twine < siv_app.sql > /dev/null 2>&1
 echo "... populating siv_app tables"
-psql -q twine < siv_app.data.sql > /dev/null 2>&1
+sudo -u postgres psql -q twine < siv_app.data.sql > /dev/null 2>&1
 
 echo "... creating siv_data schema and tables"
-psql -q twine < siv_data.sql > /dev/null 2>&1
+sudo -u postgres psql -q twine < siv_data.sql > /dev/null 2>&1
 echo "... populating siv_data tables"
-psql -q twine < siv_data.data.sql > /dev/null 2>&1
+sudo -u postgres psql -q twine < siv_data.data.sql > /dev/null 2>&1
 
 echo "... creating siv_users schema and tables"
-psql -q twine < siv_users.sql > /dev/null 2>&1
+sudo -u postgres psql -q twine < siv_users.sql > /dev/null 2>&1
 echo "... populating siv_users tables"
-psql -q twine < siv_users.data.sql > /dev/null 2>&1
+sudo -u postgres psql -q twine < siv_users.data.sql > /dev/null 2>&1
 
 echo "... adjusting auto increments"
-psql -q twine < siv.ai.sql > /dev/null 2>&1
+sudo -u postgres psql -q twine < siv.ai.sql > /dev/null 2>&1
 
 echo "... creating database users"
-psql -q twine < siv.dbusers.sql > /dev/null 2>&1
-
-echo "... restarting apache"
-sudo service apache2 restart
+sudo -u postgres psql -q twine < siv.dbusers.sql > /dev/null 2>&1
 
 echo "... script complete"
