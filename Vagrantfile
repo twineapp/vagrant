@@ -6,7 +6,7 @@ Vagrant.configure("2") do |config|
         inv_config.vm.box = "precise64"
         inv_config.vm.box_url = "http://files.vagrantup.com/precise64.box"
         inv_config.vm.provider :virtualbox do |vb|
-            vb.customize ["modifyvm", :id, "--memory", 8048, "--cpus", 4]
+            vb.customize ["modifyvm", :id, "--memory", 2048, "--cpus", 2]
         end
         
         #inv_config.vm.network :forwarded_port, guest: 80, host: 8081
