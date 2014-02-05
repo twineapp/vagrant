@@ -37,6 +37,6 @@ echo "... creating database users"
 psql -q twine < siv.dbusers.sql > /dev/null 2>&1
 
 echo "... restarting apache"
-/etc/init.d/apache2 reload
+sudo service apache2 restart
 
 echo "... script complete"

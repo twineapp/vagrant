@@ -43,26 +43,4 @@ class mongo
             require => Exec['pecl-mongo-install'],
     }
 
-    exec
-    {
-        "wget-rockmongo":
-            command => 'wget http://rockmongo.com/release/rockmongo-1.1.5.zip -O /tmp/rockmongo-1.1.5.zip',
-            timeout => 3600,
-            creates =>  "/tmp/rockmongo-1.1.5.zip",
-    }
-    
-    package 
-    { 
-        "unzip":
-            ensure  => present,
-            require => Exec['apt-get update']
-    }
-    
-    exec
-    {
-        "unzip-rockmongo":
-            command => 'unzip -o /tmp/rockmongo-1.1.5.zip -d /var/www/',
-            timeout => 3600,
-            require => [ Exec['wget-rockmongo'], Package["unzip"] ]
-    }
 }

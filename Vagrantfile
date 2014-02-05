@@ -6,7 +6,7 @@ Vagrant.configure("2") do |config|
         inv_config.vm.box = "precise64"
         inv_config.vm.box_url = "http://files.vagrantup.com/precise64.box"
         inv_config.vm.provider :virtualbox do |vb|
-            vb.customize ["modifyvm", :id, "--memory", 2048, "--cpus", 2]
+            vb.customize ["modifyvm", :id, "--memory", 8048, "--cpus", 4]
         end
         
         #inv_config.vm.network :forwarded_port, guest: 80, host: 8081
@@ -25,7 +25,6 @@ Vagrant.configure("2") do |config|
             #puppet.options = "--verbose"
         end
 
-        inv_config.vm.provision :shell, :path => "src/scripts/mysql.build.sh"
-        inv_config.vm.provision :shell, :inline => "sudo -u postgres bash /var/www/vagrant/src/scripts/postgresql.build.sh"
+        inv_config.vm.provision :shell, :inline => "sudo -u postgres /var/www/vagrant/src/scripts/postgresql.build.sh"
     end
 end
