@@ -36,4 +36,9 @@ sudo -u postgres psql -q twine < siv.ai.sql > /dev/null 2>&1
 echo "... creating database users"
 sudo -u postgres psql -q twine < siv.dbusers.sql > /dev/null 2>&1
 
+echo "... Applying SQL patches"
+for f in /var/www/vagrant/src/postgresql/siv.[0-9][0-9].sql; do
+	sudo -u postgres psql -q twine < "$f" > /dev/null 2>&1
+done
+
 echo "... script complete"
