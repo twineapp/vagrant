@@ -27,9 +27,4 @@ class etl
         command     => "pip install apscheduler",
         require     => [Package['python-pip']] 
     }
-		
-		package { "python-psycopg2":
-			ensure     => present,
-			require    => Exec['postgresql-setup']
-		}
 }
