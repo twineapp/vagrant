@@ -38,7 +38,7 @@ class postgresql
     exec
     {
         'postgresql-setup':
-            command => 'sudo bash /var/www/vagrant/src/scripts/postgresql.setup.sh',
+            command => 'sudo bash /var/www/vagrant/src/scripts/postgres.setup.sh',
             require => [Package['postgresql-9.3-postgis'], Package['phppgadmin']]
     }
 }
