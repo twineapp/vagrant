@@ -25,7 +25,7 @@ Vagrant.configure("2") do |config|
             #puppet.options = "--verbose"
         end
 
-        inv_config.vm.provision :shell, :inline => "/var/www/vagrant/src/scripts/postgresql.build.sh"
+        inv_config.vm.provision :shell, :inline => "/var/www/vagrant/src/scripts/postgres.build.sh"
 				inv_config.vm.provision :shell, :inline => "/var/www/vagrant/src/scripts/python_provision.sh"
     end
 end
