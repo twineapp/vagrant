@@ -41,4 +41,7 @@ for f in /var/www/vagrant/src/postgres/siv.[0-9][0-9].sql; do
 	sudo -u postgres psql -q twine < "$f" > /dev/null 2>&1
 done
 
+echo "    restating apache"
+sudo service apache2 restart
+
 echo "twine database build script complete"

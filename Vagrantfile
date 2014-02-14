@@ -1,5 +1,5 @@
 # -*- mode: ruby -*-
-# vi: set ft=ruby :
+
 
 Vagrant.configure("2") do |config|
     config.vm.define :twine do |inv_config|
@@ -26,6 +26,5 @@ Vagrant.configure("2") do |config|
         end
 
         inv_config.vm.provision :shell, :inline => "/var/www/vagrant/src/scripts/postgres.build.sh"
-				inv_config.vm.provision :shell, :inline => "/var/www/vagrant/src/scripts/python_provision.sh"
     end
 end
