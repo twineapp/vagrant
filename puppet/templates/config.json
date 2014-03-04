@@ -14,7 +14,7 @@
     "logo_path": "assets/images/logos/twine-dev.png",
     "offline": false,
     "root_path": "/siv-v3",
-    "user_cookie_name": "webhis_user",
+    "user_cookie_name": "twine_user",
     "version": "3.18",
 	"ping_interval": 30000,
 	"config_interval": 50000
