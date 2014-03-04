@@ -21,18 +21,6 @@ class other
             require => Exec['pecl-oauth-install'],
     }
 
-    exec 
-    { 
-        'etl-setup':
-            command => '/var/www/vagrant/src/scripts/etl-setup.sh',
-            require => Package['python-setuptools'],
-            onlyif  => 'test -f /var/www/siv-v3/api-data/setup.py',
-    }
-
-    exec { "setup-twine-tools":
-        command => 'sudo ln -sf /var/www/vagrant/src/scripts/twine-tools /usr/bin/twine-tools'
-    }
-
     package 
     { 
         "libpcre3-dev":
@@ -84,28 +72,14 @@ class other
             ensure  => present,
             require => Exec['apt-get update']
     }
-    
-    file 
-    { 
-        "/var/www/siv-v3/siv.ini":
-            ensure  => present,
-            source  => "/var/www/vagrant/puppet/templates/siv.ini",
-            require => Package['apache2'],
-    }
 
-    file 
-    { 
-        "/var/www/siv-v3/app/config-local.json":
-            ensure  => present,
-            source  => "/var/www/vagrant/puppet/templates/config-local.json",
-            require => Package['apache2'],
-    }
-
-    file { "/var/www/logs":
-	ensure => directory,
-	owner => "www-data",
-	group => "www-data",
-	mode => 777
+    file
+    {
+        "/var/www/logs":
+        	ensure => directory,
+        	owner => "www-data",
+        	group => "www-data",
+        	mode => 777
     }
 
    
@@ -125,22 +99,4 @@ class other
             require => Package['apache2'],
     }
     
-    file 
-    {
-	"/var/www/siv-v3/filestore":
-	    ensure => "directory",
-	    owner  => "root",
-	    group  => "root",
-	    mode   => 777,
-    }
-
-    file
-    {
-	"/home/TwineHeadlessBrowser":
-	    ensure => present,
-	    source => "/var/www/vagrant/puppet/templates/TwineHeadlessBrowser",
-	    group   => "root",
-	    owner   => "root",
-	    mode    => 777	
-    }
 }

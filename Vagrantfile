@@ -1,5 +1,5 @@
 # -*- mode: ruby -*-
-# vi: set ft=ruby :
+
 
 Vagrant.configure("2") do |config|
     config.vm.define :twine do |inv_config|
@@ -15,7 +15,7 @@ Vagrant.configure("2") do |config|
 
         inv_config.vm.hostname = "twine"
         
-        inv_config.vm.synced_folder "../", "/var/www", :mount_options => ["dmode=777","fmode=777"]
+        inv_config.vm.synced_folder "../", "/var/www", :mount_options => ["dmode=777","fmode=777"], owner: "www-data", group: "www-data"
 
         inv_config.vm.provision :puppet do |puppet|
             puppet.manifests_path = "puppet/manifests"
@@ -25,6 +25,6 @@ Vagrant.configure("2") do |config|
             #puppet.options = "--verbose"
         end
 
-        inv_config.vm.provision :shell, :path => "src/scripts/mysql.build.sh"
+        inv_config.vm.provision :shell, :inline => "/var/www/vagrant/src/scripts/postgres.build.sh"
     end
 end

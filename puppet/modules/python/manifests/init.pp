@@ -2,16 +2,11 @@ class python
 {      
 
     package { 'python':
-	ensure	    => present,
-	require	    => Exec['apt-get update'] 
-    }
-    
-    package { 'python-pip':
 			ensure	    => present,
 			require	    => Exec['apt-get update'] 
     }
     
-    package { 'python-setuptools':
+    package { 'python-pip':
 			ensure	    => present,
 			require	    => Exec['apt-get update'] 
     }
@@ -20,5 +15,7 @@ class python
 			ensure      => present,
 			require     => [Exec['apt-get update']]
 		}
+
+		
 
 }
