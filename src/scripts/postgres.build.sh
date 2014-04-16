@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# build / patch files are placed in /var/www/vagrant/src/postgres/
+# ensure that only patch files for a single instance are located in the directory
+
 # to run manually
 #	vagrant ssh
 #	. /var/www/vagrant/src/scripts/postgres.build.sh
@@ -41,12 +44,9 @@ sudo -u postgres psql -q $instance < post.autoincrement.sql > /dev/null 2>&1
 echo "    creating database users"
 sudo -u postgres psql -q $instance < $instance.dbusers.sql > /dev/null 2>&1
 
-echo "    applying general SQL patches"
-for f in [0-9][0-9].sql; do
-	sudo -u postgres psql -q $instance < "$f" > /dev/null 2>&1
-done
-echo "    applying $instance SQL patches"
-for f in $instance.[0-9][0-9].sql; do
+echo "    applying SQL patches"
+for f in [0-9][0-9]*.sql; do
+	echo "        on file: $f"
 	sudo -u postgres psql -q $instance < "$f" > /dev/null 2>&1
 done
 
