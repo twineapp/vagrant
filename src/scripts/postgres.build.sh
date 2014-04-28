@@ -50,6 +50,9 @@ for f in [0-9][0-9]*.sql; do
 	sudo -u postgres psql -q $instance < "$f" > /dev/null 2>&1
 done
 
+echo "    clearing python bytecode"
+find /var/www/siv-v3/api-data -name "*.pyc" -exec rm -rf {} \;
+
 echo "    restating apache"
 sudo service apache2 restart
 
