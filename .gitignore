@@ -1,5 +1,7 @@
 .vagrant/
 nbproject/
 .DS_Store
-
+.idea/
+src/
+postgres_wra
 */.DS_Store

@@ -2,43 +2,34 @@ class etl
 {
 
 		exec { "install-flask":
-			command    => "sudo pip install flask",
+			command    => "sudo pip install --upgrade flask",
 			require    => [Package['python-pip']],
 		}
 
 		exec { "install-pymongo":
-			command    => "sudo pip install pymongo",
+			command    => "sudo pip install --upgrade pymongo",
 			require    => [Package["python-pip"]]
 		}
-	
+
     exec { "install-apscheduler":
-        command     => "pip install apscheduler",
-        require     => [Package['python-pip']] 
+        command     => "pip install --upgrade apscheduler",
+        require     => [Package['python-pip']]
     }
 
-		exec { "add-pandas-repo":
-			command       => "sudo add-apt-repository ppa:pythonxy/pythonxy-devel",
+		exec { "install-pandas":
+			command       => "sudo pip install --upgrade pandas",
+			timeout       => 30000,
 			require       => Package['python-software-properties']
-		}
-
-		exec { 'update-after-pandas':
-			command       => "sudo apt-get update",
-			require       => Exec['add-pandas-repo']
-		}
-
-		package { "python-pandas":
-			ensure       => present,
-			require       => [Exec["update-after-pandas"]]
 		}
 
 		package { "libpq-dev":
 			ensure        => present,
-			require       => Exec['update-after-pandas']			
+			require		   => [Exec['apt-get update']]
 		}
 
 		exec { "install-psycopg2":
-			command       => "sudo pip install psycopg2",
-			require       => [Exec['update-after-pandas'], Package['libpq-dev']]
+			command       => "sudo pip install --upgrade psycopg2",
+			require       => [Package['libpq-dev']]
 		}
 
 }
