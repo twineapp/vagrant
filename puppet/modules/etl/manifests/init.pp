@@ -22,6 +22,11 @@ class etl
 			require       => Package['python-software-properties']
 		}
 
+		exec { "install-isoweek":
+			command       => "sudo pip install --upgrade isoweek",
+			require       => Package['python-pip']
+		}
+
 		package { "libpq-dev":
 			ensure        => present,
 			require		   => [Exec['apt-get update']]
