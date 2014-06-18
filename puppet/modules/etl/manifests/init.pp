@@ -12,7 +12,7 @@ class etl
 		}
 
     exec { "install-apscheduler":
-        command     => "pip install --upgrade apscheduler",
+        command     => "pip install --upgrade apscheduler==2.1.2",
         require     => [Package['python-pip']]
     }
 
