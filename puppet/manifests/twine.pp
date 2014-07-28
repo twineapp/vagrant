@@ -21,6 +21,7 @@ include mongo
 include python
 include nodejs
 include grunt
+include topojson
 include wsgi
 include twine
 include etl
