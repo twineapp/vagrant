@@ -6,5 +6,4 @@ sudo npm install -g grunt-cli
 
 npm install --no-bin-link
 
-
-
+npm install --save-dev grunt-shell
