@@ -37,4 +37,19 @@ class etl
 			require       => [Package['libpq-dev']]
 		}
 
+		exec { "install-jsonschema":
+			command        => "sudo pip install --upgrade jsonschema",
+			require        => [Package['python-pip']]
+		}
+
+		exec { "install-babel":
+			command        => "sudo pip install --upgrade babel",
+			require        => [Package['python-pip']]
+		}
+
+		exec { "install-flask-babel":
+			command        => "sudo pip install --upgrade flask-babel",
+			require        => [Package['python-pip']]
+		}
+
 }
