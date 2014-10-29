@@ -8,13 +8,14 @@ Vagrant.configure("2") do |config|
         inv_config.vm.provider :virtualbox do |vb|
             vb.customize ["modifyvm", :id, "--memory", 2048, "--cpus", 2]
         end
-        
+
         #inv_config.vm.network :forwarded_port, guest: 80, host: 8081
         #inv_config.vm.network :forwarded_port, guest: 3306, host: 3316
+        inv_config.vm.network :forwarded_port, guest: 5432, host:5432
         config.vm.network :private_network, ip: "192.168.50.4"
 
         inv_config.vm.hostname = "twine"
-        
+
         inv_config.vm.synced_folder "../", "/var/www", :mount_options => ["dmode=777","fmode=777"], owner: "www-data", group: "www-data"
 
         inv_config.vm.provision :puppet do |puppet|

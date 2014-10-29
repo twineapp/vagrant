@@ -1,11 +1,11 @@
 # Default path
-Exec 
+Exec
 {
   path => ["/usr/bin", "/bin", "/usr/sbin", "/sbin", "/usr/local/bin", "/usr/local/sbin"]
 }
 
-exec 
-{ 
+exec
+{
     'apt-get update':
         command => '/usr/bin/apt-get update'
 }
@@ -15,18 +15,19 @@ include other
 include apache
 include php
 include postgresql
-# include mysql
-# include phpmyadmin
+#include mysql
+#include phpmyadmin
 include mongo
 include python
 include nodejs
 include grunt
+include topojson
 include wsgi
 include twine
 include etl
 
-exec 
-{ 
+exec
+{
     'service apache2 reload':
         command => 'service apache2 reload',
         require => [ Exec["add-oauth-extension"], Exec["add-mongo-extension"] ]
