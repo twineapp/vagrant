@@ -1,7 +1,7 @@
 {
     "admin_tab": true,
     "api_path": "/siv-v3/api/index.php",
-    "api_version": "3.26",
+    "api_version": "3.25",
     "app_path": "/siv-v3/app",
     "app_title": "twine",
     "config_interval": "50000",
@@ -17,5 +17,5 @@
     "ping_interval": "30000",
     "root_path": "/siv-v3",
     "user_cookie_name": "twine_user",
-    "version": "3.26"
+    "version": "3.25"
 }
