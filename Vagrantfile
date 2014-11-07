@@ -27,6 +27,5 @@ Vagrant.configure("2") do |config|
         end
 
         inv_config.vm.provision :shell, :inline => "/var/www/vagrant/src/scripts/postgres.build.sh"
-        inv_config.vm.provision :shell, :inline => "/var/www/vagrant/src/scripts/i18n.setup.sh"
     end
 end
