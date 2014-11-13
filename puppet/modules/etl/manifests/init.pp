@@ -1,5 +1,9 @@
 class etl
 {
+		package { "r-base":
+			ensure => present,
+			require => [Exec['apt-get update']]
+		}
 
 		exec { "install-flask":
 			command    => "sudo pip install --upgrade flask",
@@ -20,6 +24,16 @@ class etl
 			command       => "sudo pip install --upgrade pandas",
 			timeout       => 30000,
 			require       => Package['python-software-properties']
+		}
+
+		exec { "install-singledispatch":
+			command      => "sudo pip install --upgrade --force-reinstall singledispatch",
+			require      => Package['python-software-properties']
+		}
+
+		exec { "install-rpy2":
+			command     => "sudo pip install --upgrade --force-reinstall rpy2",
+			require     => [Exec["install-singledispatch"], Exec["install-pandas"], Package['r-base']]
 		}
 
 		exec { "install-isoweek":
