@@ -40,7 +40,6 @@ include postgresql
 #include mysql
 #include phpmyadmin
 include mongo
-include python
 include nodejs
 include grunt
 include topojson
