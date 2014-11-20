@@ -4,15 +4,16 @@ Vagrant setup for Twine
 Virtual OS: Ubuntu 12.04 (Precise) x64
 With Packages:
 - Apache
-- MySQL
 - PHP
-- phpMyAdmin
 - Curl
 - OAuth
 - Mongo
 - Prince
 - Python
 - Flask
+- PostgreSQL
+- phppgadmin
+- R + Rserve
 
 ## Requirements:
 - VirtualBox (https://www.virtualbox.org/wiki/Downloads), tested with v4.2.12
@@ -56,18 +57,12 @@ With Packages:
 - postgres username:password are admin:admin
 
 ## Known issues
-- **Hardware virtualization.** Issues have been reported in Windows 7 when hardward virtualization was not enabled in the system bios. http://www.virtualbox.org/manual/ch10.html
-- **Python install in Windows hosts.** The etl-setup.sh script is not executing in windows hosts. To run in manually:
-    - bring up the vagrant
-    - ssh in
-    - $ cd /var/www/flaskapps/etl/
-    - $ sudo python setup.py install
-    - in your host, copy twineapp/vagrant/puppet/templates/config_local.py to twineapp/flaskapps/etl/ETL/config_local.py
-    - $ sudo apachectl restart
-    - You should now get a response at 192.168.50.4/etl/status
+- **Hardware virtualization.** Issues have been reported in Windows 7 when hardware virtualization was not enabled in the system bios. http://www.virtualbox.org/manual/ch10.html
+- **Permissions Issues** There have been issues on Windows systems when the project code has been cloned and run from folders which do not have sufficient permissions for the application to run on the Host system causing issues inside the vagrant with permissions.
 
 ## Installing Puppets Locally:  
 1. Clone this repository (twineapp/vagrant) in '/var/www/'  
 2. Go through step 3. from above "Guide"  
 3. sudo apt-get install puppet-common  
 4. Change directory to '/var/www/vagrant/' and run: sudo puppet apply puppet/manifests/twine.pp --modulepath=puppet/modules/  
+
