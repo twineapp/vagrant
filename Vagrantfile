@@ -22,8 +22,8 @@ Vagrant.configure("2") do |config|
             puppet.manifests_path = "puppet/manifests"
             puppet.manifest_file  = "twine.pp"
             puppet.module_path = "puppet/modules"
-            #puppet.options = "--verbose --debug"
-            #puppet.options = "--verbose"
+            # puppet.options = "--verbose --debug"
+            puppet.options = "--verbose"
         end
 
         inv_config.vm.provision :shell, :inline => "/var/www/vagrant/src/scripts/postgres.build.sh"
