@@ -2,6 +2,8 @@
 nbproject/
 .DS_Store
 .idea/
-src/
+src/additional
+src/mongo
+src/postgres
 postgres_wra
 */.DS_Store
