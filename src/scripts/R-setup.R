@@ -1,2 +1,2 @@
-install.packages(c('rjson', 'Rserve'), repos = "http://cran.case.edu" )
+install.packages(c('jsonlite', 'Rserve'), repos = "http://cran.case.edu" )
 
