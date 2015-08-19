@@ -23,12 +23,16 @@ With Packages:
 1. Download and install software from Requirements  
 2. Create a folder named 'twineapp/' and clone this repository (twineapp/vagrant).  
 3. Clone / copy in the twine repos and datasets  
-    3.1. Clone 'siv-v3' github repository into 'twineapp/siv-v3/' directory (~55MB)  
-    3.2. **(optional)** Clone 'api-data' github repository into 'twineapp/siv-v3/api-data/' directory (~0.3MB)  
-    3.3. **(optional)** Clone 'documentation' github repository into 'twineapp/documentation/' directory  
-    3.4. Copy twine mysql build to 'twineapp/vagrant/src/mysql/' directory (~83MB)  
-    3.5. **(optional)** Copy twine mongodb build to 'twineapp/vagrant/src/mongo/' directory (~288MB)
+    3.1. 'siv-v3' github repository to 'twineapp/siv-v3/' directory (~55MB)  
+    3.2. 'api-data' github repository to 'twineapp/siv-v3/api-data/' directory (~0.3MB)  
+    3.3. 'instance-unhcr' github repository to 'twineapp/twine_instances/instance-unhcr/' directory
+    3.4. **(optional)**  'documentation' github repository to 'twineapp/documentation/' directory  
+    3.4. Unzip twine postgres build into 'twineapp/vagrant/src/postgres/' directory (~83MB)  
+    3.5. Unzip twine mongodb build to 'twineapp/vagrant/src/mongo/' directory (~288MB)
 4. Run terminal, go into 'twineapp/vagrant/', and execute the command 'vagrant up'. This will download the base box of ubuntu (~35MB), and bring up the twine vm  
+5. Load an instance, for example (ssh'd to the app root):
+
+    grunt dev --instance=/var/www/twine_instances/instance-unhcr
 
 ## Working with the twine vagrant:
 - "vagrant up" starts the virtual machine
@@ -43,7 +47,6 @@ With Packages:
 - Server should be ready to use at 192.168.50.4 (modify this static IP in Vagrantfile before bringing up the vagrant if required)
 - Test via http://192.168.50.4/phpinfo.php OR http://192.168.50.4/siv-v3/login.php
 - src in the directory is linked to the webserver document root
-- Command to copy files to Amazon EC2: scp -i ~/Desktop/ubuntu.pem sql/\* ubuntu@54.243.48.252:/var/www/vagrant/src/sql
 
 ## PHP Docs:
 - To setup phpdoc and dependencies run: sudo /var/www/vagrant/src/scripts/phpdoc-setup.sh
@@ -52,8 +55,6 @@ With Packages:
 - these are copied into the documentation repo at documentation/api/app/
 
 ## VM Passwords
-- mysql username:password are root:pwd
-- rockmongo username:password are admin:admin
 - postgres username:password are admin:admin
 
 ## Known issues
